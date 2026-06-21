@@ -1,0 +1,91 @@
+// Prisma schema for Lokumu AI
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id            String   @id @default(uuid())
+  email         String   @unique
+  passwordHash  String?
+  firstName     String?
+  lastName      String?
+  language      String   @default("fr") // Preferred UI language
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  sessions      Session[]
+  conversations Conversation[]
+
+  @@index([email])
+}
+
+model Session {
+  id        String   @id @default(uuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@index([token])
+  @@index([userId])
+}
+
+model Conversation {
+  id            String   @id @default(uuid())
+  userId        String
+  title         String   @default("Nouvelle conversation")
+  language      String   // Detected or set by user
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  user          User     @relation(fields: [userId], references: [id])
+  messages      ChatMessage[]
+
+  @@index([userId])
+  @@index([updatedAt])
+}
+
+model ChatMessage {
+  id            String   @id @default(uuid())
+  conversationId String
+  content       String
+  role          String   // "user" | "assistant" | "system"
+  language      String   // Detected language of this message
+  timestamp     DateTime @default(now())
+  conversation  Conversation @relation(fields: [conversationId], references: [id])
+  // For RAG: store which chunks were used (optional)
+  usedChunkIds  String[] @default([])
+
+  @@index([conversationId, timestamp])
+  @@index([language])
+}
+
+model Document {
+  id            String   @id @default(uuid())
+  source        String   // URL, file path, etc.
+  title         String?
+  language      String   // ISO 639-3: fra, lin, swa, etc.
+  content       String
+  chunks        Chunk[]
+  createdAt     DateTime @default(now())
+
+  @@index([language])
+  @@index([source])
+}
+
+model Chunk {
+  id             String   @id @default(uuid())
+  documentId     String
+  content        String
+  language       String   // ISO 639-3: fra, lin, swa, etc.
+  tokenCount     Int
+  embedding      Bytes    // Stored as raw bytes; pgvector extension will interpret as vector(1024)
+  metadata       Json     // { page: int, section: string, etc. }
+  document       Document @relation(fields: [documentId], references: [id])
+
+  @@index([embedding]) // Uses pgvector ivfflat or hnsw index (requires pgvector extension)
+  @@index([language])
+  @@index([documentId])
+}

@@ -1,0 +1,39 @@
+# Dependencies
+node_modules/
+node_modules
+
+# Build outputs
+dist/
+build/
+
+# Environment
+.env
+.env.*.local
+
+# Logs
+*.log
+server.log
+dev.log
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Database
+*.sqlite
+*.sqlite3
+
+# Models (large files - store externally)
+models/
+*.gguf
+*.bin
+
+# Test coverage
+coverage/
+.nyc_output/

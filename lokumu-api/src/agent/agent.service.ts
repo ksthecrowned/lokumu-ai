@@ -25,12 +25,12 @@ export class AgentService {
     }
   }
 
-  private async handleChatMode(prompt: string, language?: string) {
+  private async handleChatMode(prompt: string, language?: string): Promise<{ mode: Mode; response: string; sources: any[] }> {
     const sources = await this.ragService.search({
       query: prompt,
       language,
       limit: 5,
-    });
+    }) as any[];
 
     const contextText = sources.map((s: any) => s.content).join('\n\n');
     const systemPrompt = getSystemPrompt(language);
@@ -43,13 +43,13 @@ export class AgentService {
     });
 
     return {
-      mode: 'chat',
+      mode: 'chat' as Mode,
       response,
       sources,
     };
   }
 
-  private async handleCodeMode(prompt: string) {
+  private async handleCodeMode(prompt: string): Promise<{ mode: Mode; response: string }> {
     const systemPrompt = `You are Lokumu Code Agent. Generate clean, working code.
 Available tools after response: read_file, write_file, search_code, shell_execute`;
 
@@ -62,7 +62,7 @@ Available tools after response: read_file, write_file, search_code, shell_execut
     });
 
     return {
-      mode: 'code',
+      mode: 'code' as Mode,
       response,
     };
   }

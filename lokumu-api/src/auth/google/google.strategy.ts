@@ -7,11 +7,11 @@ import { AuthService } from '../auth.service';
 export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
   constructor(private authService: AuthService) {
     super({
-      clientID: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: '/auth/google/callback',
+      clientID: process.env.GOOGLE_CLIENT_ID || 'dummy',
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET || 'dummy',
+      callbackURL: process.env.GOOGLE_CALLBACK_URL || '/auth/google/callback',
       scope: ['email', 'profile'],
-    });
+    } as any);
   }
 
   async validate(
@@ -20,12 +20,11 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     profile: any,
     done: VerifyCallback,
   ): Promise<any> {
-    const { emails, name, photos } = profile;
+    const { emails, name } = profile;
     const user = await this.authService.googleLogin({
       email: emails[0].value,
       firstName: name?.givenName,
       lastName: name?.familyName,
-      avatar: photos?.[0]?.value,
     });
     
     done(null, user);

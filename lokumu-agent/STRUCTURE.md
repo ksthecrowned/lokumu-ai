@@ -1,0 +1,27 @@
+lokumu-ai
+  lokumu-agent/
+    src/
+      agent.ts
+      cli.ts
+      context.ts
+      llm.ts
+      test.agent.ts
+      prompts/
+        system.prompt.ts
+      runtime/
+        context.ts
+        loop.ts
+        toolProtocol.ts
+        tollRunner.ts
+      tools/
+        fileEditor.ts
+        fileReader.ts
+        fileWriter.ts
+        fs.ts
+        projectScanner.ts
+        search.ts
+        shell.ts
+    bun.lock
+    index.ts
+    package.json
+    tsconfig.jso

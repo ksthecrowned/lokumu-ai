@@ -26,7 +26,6 @@ export class AuthService {
         language,
       },
     });
-    // Omit password hash from response
     const { passwordHash: _, ...result } = user;
     return result;
   }
@@ -37,27 +36,54 @@ export class AuthService {
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
     }
+    if (!user.passwordHash) {
+      throw new UnauthorizedException('Invalid credentials - no password set');
+    }
     const passwordValid = await bcrypt.compare(password, user.passwordHash);
     if (!passwordValid) {
       throw new UnauthorizedException('Invalid credentials');
     }
+    return this.generateTokens(user);
+  }
+
+  async googleLogin(profile: { email: string; firstName?: string; lastName?: string }) {
+    const { email, firstName, lastName } = profile;
+    let user = await this.prisma.user.findUnique({ where: { email } });
+    
+    if (!user) {
+      user = await this.prisma.user.create({
+        data: {
+          email,
+          firstName,
+          lastName,
+          language: 'fr',
+          passwordHash: null,
+        },
+      });
+    }
+    
+    return this.generateTokens(user);
+  }
+
+  private async generateTokens(user: { id: string; email: string; firstName?: string | null; lastName?: string | null; language: string }) {
     const payload = { sub: user.id, email: user.email, role: 'user' };
     const accessToken = this.jwtService.sign(payload);
-    // Create session
+    
     const session = await this.prisma.session.create({
       data: {
         userId: user.id,
         token: accessToken,
-        expiresAt: new Date(Date.now() + 15 * 60 * 1000), // 15 minutes
+        expiresAt: new Date(Date.now() + 15 * 60 * 1000),
       },
     });
+    
     return {
       accessToken,
       user: {
         id: user.id,
         email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
+        firstName: user.firstName ?? undefined,
+        lastName: user.lastName ?? undefined,
         language: user.language,
       },
     };
@@ -71,7 +97,6 @@ export class AuthService {
     if (!session) {
       return null;
     }
-    // Check expiration
     if (session.expiresAt < new Date()) {
       await this.prisma.session.delete({ where: { id: session.id } });
       return null;
