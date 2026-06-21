@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { detectMode, Mode } from './mode-detector';
 import { ModelService } from '../model/model.service';
 import { RagService } from '../rag/rag.service';
+import { getSystemPrompt, RAG_CONTEXT_TEMPLATE } from '../prompts/multilingual';
 
 @Injectable()
 export class AgentService {
@@ -25,18 +26,15 @@ export class AgentService {
   }
 
   private async handleChatMode(prompt: string, language?: string) {
-    // Get RAG context
     const sources = await this.ragService.search({
       query: prompt,
       language,
       limit: 5,
     });
 
-    // Build prompt with context
     const contextText = sources.map((s: any) => s.content).join('\n\n');
-    const fullPrompt = language
-      ? `[CONTEXT]\n${contextText}\n[/CONTEXT]\n\nUser question: ${prompt}\n\nAnswer in ${language}:`
-      : `[CONTEXT]\n${contextText}\n[/CONTEXT]\n\nUser question: ${prompt}`;
+    const systemPrompt = getSystemPrompt(language);
+    const fullPrompt = `${systemPrompt}\n\n${RAG_CONTEXT_TEMPLATE(contextText, language).replace('{prompt}', prompt)}`;
 
     const response = await this.modelService.generate(fullPrompt, {
       n_predict: 128,
@@ -52,7 +50,6 @@ export class AgentService {
   }
 
   private async handleCodeMode(prompt: string) {
-    // For code mode, generate code-focused response
     const systemPrompt = `You are Lokumu Code Agent. Generate clean, working code.
 Available tools after response: read_file, write_file, search_code, shell_execute`;
 
