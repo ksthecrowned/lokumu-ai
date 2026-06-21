@@ -41,6 +41,7 @@ export class AgentService {
     const response = await this.modelService.generate(fullPrompt, {
       n_predict: 128,
       temperature: 0.7,
+      modelType: 'chat',
     });
 
     return {
@@ -60,6 +61,7 @@ Available tools after response: read_file, write_file, search_code, shell_execut
     const response = await this.modelService.generate(fullPrompt, {
       n_predict: 256,
       temperature: 0.1,
+      modelType: 'code',
     });
 
     return {
