@@ -56,4 +56,4 @@ bun test
 Copiez `.env.example` vers `.env` et configurez:
 - `DATABASE_URL` - Connexion PostgreSQL
 - `JWT_SECRET` - Clé secrète pour JWT
-- `LLM_MODEL` - Modèle Ollama (défaut: qwen2.5-coder:1.5b)
+- `LLM_MODEL` - Modèle Ollama (défaut: qwen2.5-coder:1.5b)# lokumu-ai
