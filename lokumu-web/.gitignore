@@ -6,6 +6,7 @@ yarn-error.log*
 pnpm-debug.log*
 .bun/
 bun.lockb?
+node_modules/
 
 # Next.js
 .next/

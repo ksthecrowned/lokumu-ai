@@ -1,0 +1,17 @@
+{
+  "Header": {
+    "title": "Lokumu IA",
+    "signIn": "Se connecter avec Google",
+    "signOut": "Se déconnecter"
+  },
+  "Chat": {
+    "title": "Discuter avec Lokumu",
+    "inputPlaceholder": "Posez-moi une question ou demandez du code...",
+    "send": "Envoyer",
+    "modeChat": "Mode Chat",
+    "modeCode": "Mode Code",
+    "error": "Erreur",
+    "offlineTitle": "Hors ligne",
+    "offlineDesc": "Vous semblez être hors ligne. Certaines fonctionnalités peuvent être indisponibles."
+  }
+}

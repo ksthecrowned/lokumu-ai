@@ -1,0 +1,17 @@
+{
+  "Header": {
+    "title": "Lokumu AI",
+    "signIn": "Sign in with Google",
+    "signOut": "Sign out"
+  },
+  "Chat": {
+    "title": "Chat with Lokumu",
+    "inputPlaceholder": "Ask me anything or request code...",
+    "send": "Send",
+    "modeChat": "Chat Mode",
+    "modeCode": "Code Mode",
+    "error": "Error",
+    "offlineTitle": "Offline",
+    "offlineDesc": "You appear to be offline. Some features may be unavailable."
+  }
+}

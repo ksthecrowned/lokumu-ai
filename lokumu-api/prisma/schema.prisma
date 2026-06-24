@@ -81,11 +81,10 @@ model Chunk {
   content        String
   language       String   // ISO 639-3: fra, lin, swa, etc.
   tokenCount     Int
-  embedding      Bytes    // Stored as raw bytes; pgvector extension will interpret as vector(1024)
+  embedding      Bytes    // PostgreSQL vector stored as raw bytes; use raw SQL for similarity search
   metadata       Json     // { page: int, section: string, etc. }
   document       Document @relation(fields: [documentId], references: [id])
 
-  @@index([embedding]) // Uses pgvector ivfflat or hnsw index (requires pgvector extension)
   @@index([language])
   @@index([documentId])
 }
