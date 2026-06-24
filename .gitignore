@@ -7,10 +7,11 @@ pnpm-debug.log*
 .bun/
 bun.lockb?
 
-# Build outputs
-dist/
-build/
-.tsbuildinfo
+# Next.js
+.next/
+out/
+.cache/
+.vercel
 
 # Environment
 .env
@@ -21,12 +22,9 @@ build/
 logs
 *.log
 
-# Prisma migrations (keep migrations folder but ignore generated SQL?)
-prisma/migrations/*
-!prisma/migrations/README.md
-
-# Ollama data (if mounted)
-ollama/
+# OS
+.DS_Store
+Thumbs.db
 
 # IDE
 .vscode/
@@ -37,6 +35,23 @@ ollama/
 *.sln
 *.sw?
 
+# Docker
+docker-compose.override.yml
+
 # Misc
 .coverage/
 .nyc_output
+
+# Prisma
+prisma/migrations/*
+!prisma/migrations/README.md
+
+# Ollama data (if using volume)
+ollama/
+
+# Build
+dist/
+build/
+
+# Local editor temp
+.kilo/
