@@ -1,8 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { detectMode, Mode } from './mode-detector';
 import { ModelService } from '../model/model.service';
-import { RagService } from '../rag/rag.service';
-import { getSystemPrompt, RAG_CONTEXT_TEMPLATE } from '../prompts/multilingual';
+import { RagSearchResult, RagService } from '../rag/rag.service';
+import { normalizeLanguage } from '../shared/i18n/languages';
+import {
+  buildCulturalSystemPrompt,
+  buildRagPrompt,
+} from '../prompts/cultural.prompt';
+import { shouldUseRag } from './cultural-router';
 
 @Injectable()
 export class AssistantService {
@@ -12,58 +16,80 @@ export class AssistantService {
   ) {}
 
   async processRequest(prompt: string, language?: string): Promise<{
-    mode: Mode;
+    mode: 'chat';
     response: string;
-    sources?: any[];
+    sources: Array<{
+      id: string;
+      title: string;
+      type: string;
+      community: boolean;
+      score: number;
+    }>;
+    messageId: string;
+    conversationId: string;
   }> {
-    const mode = detectMode(prompt);
+    const lang = normalizeLanguage(language);
+    let sources: RagSearchResult[] = [];
 
-    if (mode === 'chat') {
-      return this.handleChatMode(prompt, language);
+    if (shouldUseRag(prompt)) {
+      const matches = await this.ragService.search({
+        query: prompt,
+        language: lang,
+        limit: 5,
+      });
+      sources = matches
+        .map((item) => ({
+          ...item,
+          score: item.community ? item.score + 0.1 : item.score,
+        }))
+        .sort((a, b) => b.score - a.score);
     } else {
-      return this.handleCodeMode(prompt);
+      sources = [];
     }
-  }
 
-  private async handleChatMode(prompt: string, language?: string): Promise<{ mode: Mode; response: string; sources: any[] }> {
-    const sources = await this.ragService.search({
-      query: prompt,
-      language,
-      limit: 5,
-    }) as any[];
+    const contextText = sources
+      .map((item) => {
+        const sourceTitle =
+          typeof item.metadata === 'object' &&
+          item.metadata &&
+          !Array.isArray(item.metadata)
+            ? String((item.metadata as Record<string, unknown>).title ?? 'Corpus')
+            : 'Corpus';
+        return `${item.content} (source: ${sourceTitle})`;
+      })
+      .join('\n\n');
 
-    const contextText = sources.map((s: any) => s.content).join('\n\n');
-    const systemPrompt = getSystemPrompt(language);
-    const fullPrompt = `${systemPrompt}\n\n${RAG_CONTEXT_TEMPLATE(contextText, language).replace('{prompt}', prompt)}`;
-
+    const systemPrompt = buildCulturalSystemPrompt(lang);
+    const fullPrompt = `${systemPrompt}\n\n${buildRagPrompt(
+      contextText,
+      prompt,
+      lang,
+      '',
+    )}`;
     const response = await this.modelService.generate(fullPrompt, {
-      n_predict: 128,
       temperature: 0.7,
-      modelType: 'chat',
     });
 
     return {
-      mode: 'chat' as Mode,
+      mode: 'chat',
       response,
-      sources,
-    };
-  }
-
-  private async handleCodeMode(prompt: string): Promise<{ mode: Mode; response: string }> {
-    const systemPrompt = `You are Lokumu Code Agent. Generate clean, working code.
-Available tools after response: read_file, write_file, search_code, shell_execute`;
-
-    const fullPrompt = `${systemPrompt}\n\nUser request: ${prompt}\n\nGenerate the code:`;
-
-    const response = await this.modelService.generate(fullPrompt, {
-      n_predict: 256,
-      temperature: 0.1,
-      modelType: 'code',
-    });
-
-    return {
-      mode: 'code' as Mode,
-      response,
+      messageId: crypto.randomUUID(),
+      conversationId: crypto.randomUUID(),
+      sources: sources.map((item) => {
+        const metadata =
+          typeof item.metadata === 'object' &&
+          item.metadata &&
+          !Array.isArray(item.metadata)
+            ? (item.metadata as Record<string, unknown>)
+            : {};
+        return {
+          id: item.id,
+          title: String(metadata.title ?? 'Corpus culturel'),
+          type: String(metadata.type ?? 'cultural'),
+          community: item.community,
+          score: item.score,
+        };
+      }),
     };
   }
 }

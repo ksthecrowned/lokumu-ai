@@ -1,116 +1,76 @@
-import { Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
-import { spawn, ChildProcessWithoutNullStreams } from 'child_process';
-import { join } from 'path';
-import { promises as fs } from 'fs';
-import { getModelConfig, ModelType } from './model-registry';
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import { OllamaClient, OllamaMessage } from './ollama.client';
 
 @Injectable()
-export class ModelService implements OnModuleInit, OnModuleDestroy {
-  private llamaProcess: ChildProcessWithoutNullStreams | null;
-  private currentModel: ModelType | null = null;
-  private readonly LLAMA_BIN = process.env.LLAMA_BIN || join(process.cwd(), 'llama.cpp', 'main');
-  private readonly MODEL_DIR = process.env.MODEL_DIR || join(process.cwd(), 'models');
+export class ModelService implements OnModuleInit {
+  private readonly logger = new Logger(ModelService.name);
+  private readonly ollama = new OllamaClient();
+  private readonly primaryModel = process.env.OLLAMA_MODEL ?? 'qwen3.5';
+  private readonly fallbackModel =
+    process.env.OLLAMA_FALLBACK_MODEL ?? 'deepseek-coder';
 
   async onModuleInit() {
-    console.log('ModelService initialized. Llama binary expected at:', this.LLAMA_BIN);
-  }
-
-  async onModuleDestroy() {
-    if (this.llamaProcess) {
-      this.llamaProcess.kill();
-      this.llamaProcess = null;
+    const available = await this.ollama.isAvailable();
+    if (!available) {
+      this.logger.warn(
+        'Ollama is unavailable on startup. Expected at OLLAMA_BASE_URL.',
+      );
     }
   }
 
-  /**
-   * Ensure correct model is loaded for the given mode
-   */
-  private async ensureModel(type: ModelType): Promise<void> {
-    if (this.currentModel === type && this.llamaProcess) return;
-
-    // Kill current process if switching models
-    if (this.llamaProcess) {
-      this.llamaProcess.kill();
-      this.llamaProcess = null;
-    }
-
-    this.currentModel = type;
-  }
-
-  /**
-   * Generate text using llama.cpp CLI with mode-based model selection
-   */
   async generate(
     prompt: string,
     options: {
-      n_predict?: number;
       temperature?: number;
-      top_p?: number;
-      repeat_penalty?: number;
-      modelType?: ModelType;
       model?: string;
+      systemPrompt?: string;
     } = {},
   ): Promise<string> {
-    const modelType = options.modelType || 'code';
-    const modelConfig = options.model ? null : getModelConfig(modelType);
-    const modelName = options.model || modelConfig?.defaultName || 'qwen2.5-coder-1.5b-q4_k_m.gguf';
+    const messages: OllamaMessage[] = [];
+    if (options.systemPrompt) {
+      messages.push({ role: 'system', content: options.systemPrompt });
+    }
+    messages.push({ role: 'user', content: prompt });
 
-    const {
-      n_predict = modelType === 'chat' ? 256 : 128,
-      temperature = modelType === 'chat' ? 0.7 : 0.1,
-      top_p = 0.95,
-      repeat_penalty = 1.1,
-    } = options;
+    const preferred = options.model ?? this.primaryModel;
+    const model = (await this.ollama.hasModel(preferred))
+      ? preferred
+      : this.fallbackModel;
 
-    const modelPath = join(this.MODEL_DIR, modelName);
-
-    const args = [
-      '-m', modelPath,
-      '-p', prompt,
-      '-n', n_predict.toString(),
-      '--temp', temperature.toString(),
-      '--top_p', top_p.toString(),
-      '--repeat_penalty', repeat_penalty.toString(),
-      '--ctx_size', '2048',
-    ];
-
-    return new Promise((resolve, reject) => {
-      const child = spawn(this.LLAMA_BIN, args, { stdio: ['pipe', 'pipe', 'pipe'] }) as ChildProcessWithoutNullStreams;
-      let output = '';
-      child.stdout.setEncoding('utf8');
-      child.stdout.on('data', (data: string) => {
-        output += data;
-      });
-      child.stderr.setEncoding('utf8');
-      child.stderr.on('data', (data: string) => {
-        console.error('llama.cpp stderr:', data);
-      });
-      child.on('close', (code: number) => {
-        if (code !== 0) {
-          return reject(new Error(`llama.cpp exited with code ${code}`));
-        }
-        resolve(output.trim());
-      });
-      child.on('error', (err: Error) => {
-        reject(err);
-      });
-    });
-  }
-
-  /**
-   * Check if model exists
-   */
-  async loadModel(modelName: string): Promise<boolean> {
-    const modelPath = join(this.MODEL_DIR, modelName);
     try {
-      await fs.access(modelPath, fs.constants.R_OK);
-      return true;
-    } catch {
-      return false;
+      return await this.ollama.chat(model, messages, {
+        temperature: options.temperature,
+      });
+    } catch (error) {
+      this.logger.error('Ollama generation failed', error as Error);
+      throw new Error('ollama_unavailable');
     }
   }
 
-  getCurrentModel(): ModelType | null {
-    return this.currentModel;
+  generateStream(
+    prompt: string,
+    options: {
+      temperature?: number;
+      model?: string;
+      systemPrompt?: string;
+    } = {},
+  ): AsyncGenerator<string> {
+    const messages: OllamaMessage[] = [];
+    if (options.systemPrompt) {
+      messages.push({ role: 'system', content: options.systemPrompt });
+    }
+    messages.push({ role: 'user', content: prompt });
+    const model = options.model ?? this.primaryModel;
+    return this.ollama.chatStream(model, messages, {
+      temperature: options.temperature,
+    });
+  }
+
+  async loadModel(modelName: string): Promise<boolean> {
+    return this.ollama.hasModel(modelName);
+  }
+
+  async isAvailable(): Promise<boolean> {
+    return this.ollama.isAvailable();
   }
 }

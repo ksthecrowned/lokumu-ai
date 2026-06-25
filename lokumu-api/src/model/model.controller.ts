@@ -15,10 +15,10 @@ export class ModelController {
 
   @Post('generate')
   async generate(
-    @Body() body: { prompt: string; n_predict?: number; temperature?: number; top_p?: number; repeat_penalty?: number; model?: string }
+    @Body() body: { prompt: string; temperature?: number; model?: string }
   ) {
-    const { prompt, n_predict, temperature, top_p, repeat_penalty, model } = body;
-    return this.modelService.generate(prompt, { n_predict, temperature, top_p, repeat_penalty, model });
+    const { prompt, temperature, model } = body;
+    return this.modelService.generate(prompt, { temperature, model });
   }
 
   @Get('status')

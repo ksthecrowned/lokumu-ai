@@ -1,120 +1,146 @@
-import { Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
-import { Prisma } from '@prisma/client';
+import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { pipeline } from '@xenova/transformers';
+import { Prisma } from '@prisma/client';
+import { PrismaService } from '../prisma/prisma.service';
+import { normalizeLanguage } from '../shared/i18n/languages';
+
+export type RagSearchResult = {
+  id: string;
+  content: string;
+  metadata: Prisma.JsonValue;
+  language: string;
+  score: number;
+  community: boolean;
+};
+
+type IngestDocumentInput = {
+  source: string;
+  title?: string;
+  language: string;
+  content: string;
+  metadata?: Record<string, unknown>;
+};
 
 @Injectable()
 export class RagService implements OnModuleInit, OnModuleDestroy {
-  private featureExtractor: any; // for embeddings
-  private readonly EMBEDDING_MODEL = 'Xenova/bge-m3'; // Multilingual model supporting target languages
+  private featureExtractor: any | null = null;
+  private readonly EMBEDDING_MODEL = 'Xenova/bge-m3';
+  private readonly EMBEDDING_DIMENSION = 1024;
+  private readonly SCORE_THRESHOLD = 0.5;
+  private readonly mockFallbackEnabled =
+    process.env.EMBEDDING_FALLBACK_MOCK === 'true';
 
   constructor(private prisma: PrismaService) {}
 
   async onModuleInit() {
-    console.log('Loading embedding model...');
+    if (this.mockFallbackEnabled) {
+      this.featureExtractor = null;
+      console.warn(
+        'EMBEDDING_FALLBACK_MOCK=true, using deterministic mock embeddings',
+      );
+      return;
+    }
+
     this.featureExtractor = await pipeline(
       'feature-extraction',
       this.EMBEDDING_MODEL,
-      { quantized: false } // we can use quantized later if needed
+      { quantized: false },
     );
-    console.log('Embedding model loaded');
   }
 
   async onModuleDestroy() {
-    // cleanup if needed
     this.featureExtractor = null;
   }
 
-  /**
-   * Generate embedding for a given text
-   */
-  async generateEmbedding(text: string): Promise<number[]> {
-    if (!this.featureExtractor) {
-      throw new Error('Embedding model not initialized');
-    }
-    const output = await this.featureExtractor(text, {
-      pooling: 'mean', // mean pooling over tokens
-      normalize: true, // normalize to unit length
-    });
-    // output is a Float32Array or number[]
-    return Array.from(output.data || output);
+  isModelLoaded(): boolean {
+    return this.featureExtractor !== null || this.mockFallbackEnabled;
   }
 
-  /**
-   * Ingest a document: split into chunks, generate embeddings, store
-   */
+  async generateEmbedding(text: string): Promise<number[]> {
+    if (!this.featureExtractor) {
+      if (!this.mockFallbackEnabled) {
+        throw new Error(
+          'Embedding model not loaded. Set EMBEDDING_FALLBACK_MOCK=true for CI.',
+        );
+      }
+      return this.generateMockEmbedding(text);
+    }
+
+    const output = await this.featureExtractor(text, {
+      pooling: 'mean',
+      normalize: true,
+    });
+    const values = Array.from(output.data || output) as number[];
+    if (values.length >= this.EMBEDDING_DIMENSION) {
+      return values.slice(0, this.EMBEDDING_DIMENSION);
+    }
+    return values.concat(
+      new Array(this.EMBEDDING_DIMENSION - values.length).fill(0),
+    );
+  }
+
+  private generateMockEmbedding(text: string): number[] {
+    const vector = new Array(this.EMBEDDING_DIMENSION).fill(0);
+    let hash = 2166136261;
+    for (let i = 0; i < text.length; i += 1) {
+      hash ^= text.charCodeAt(i);
+      hash = Math.imul(hash, 16777619);
+    }
+    for (let i = 0; i < this.EMBEDDING_DIMENSION; i += 1) {
+      const seed = Math.sin(hash + i * 0.37) * 10000;
+      vector[i] = (seed - Math.floor(seed)) * 2 - 1;
+    }
+    return vector;
+  }
+
   async ingestDocument({
     source,
     title,
     language,
     content,
-  }: {
-    source: string;
-    title?: string;
-    language: string; // ISO-639-3 code e.g., 'fra', 'lin', 'swa', 'eng'
-    content: string;
-  }) {
-    // Simple chunking: split by paragraphs, limit size
-    const PARAGRAPH_SPLIT = /\n\s*\n/;
-    const MAX_CHUNK_TOKENS = 256; // approximate token limit; we'll just use characters for simplicity
-    const paragraphs = content.split(PARAGRAPH_SPLIT).map(p => p.trim()).filter(p => p.length > 0);
-
-    const chunks: { content: string; tokenCount: number; language: string; embedding: number[]; metadata: {} }[] = [];
-    for (const para of paragraphs) {
-      // naive token estimate: 4 chars per token
-      const tokenCount = Math.ceil(para.length / 4);
-      if (tokenCount > MAX_CHUNK_TOKENS) {
-        // split further by sentences
-        const sentences = para.match(/[^.!?]+[.!?]+/g) || [para];
-        let buffer = '';
-        for (const sent of sentences) {
-          if ((buffer + sent).length / 4 > MAX_CHUNK_TOKENS) {
-            if (buffer) {
-              const emb = await this.generateEmbedding(buffer);
-              chunks.push({ content: buffer, tokenCount: Math.ceil(buffer.length / 4), language, embedding: emb, metadata: {} });
-              buffer = '';
-            }
-            buffer = sent;
-          } else {
-            buffer += (buffer ? ' ' : '') + sent;
-          }
-        }
-        if (buffer) {
-          const emb = await this.generateEmbedding(buffer);
-          chunks.push({ content: buffer, tokenCount: Math.ceil(buffer.length / 4), language, embedding: emb, metadata: {} });
-        }
-      } else {
-        const emb = await this.generateEmbedding(para);
-        chunks.push({ content: para, tokenCount: Math.ceil(para.length / 4), language, embedding: emb, metadata: {} });
-      }
-    }
-
-    // Store document and chunks in DB
+    metadata = {},
+  }: IngestDocumentInput) {
+    const internalLanguage = normalizeLanguage(language);
     const document = await this.prisma.document.create({
       data: {
         source,
         title,
-        language,
+        language: internalLanguage,
         content,
-        chunks: {
-          create: chunks.map(chunk => ({
-            content: chunk.content,
-            tokenCount: chunk.tokenCount,
-            language: chunk.language,
-            // Store embedding as Bytes; Prisma expects Uint8Array
-            embedding: new Uint8Array(new Float32Array(chunk.embedding).buffer),
-            metadata: chunk.metadata,
-          })),
-        },
       },
     });
 
-    return document;
+    const chunks = this.chunkText(content);
+    const createdChunks: Array<{ id: string }> = [];
+
+    for (const chunkContent of chunks) {
+      const embedding = await this.generateEmbedding(chunkContent);
+      const created = await this.prisma.chunk.create({
+        data: {
+          documentId: document.id,
+          content: chunkContent,
+          tokenCount: Math.max(1, Math.ceil(chunkContent.length / 4)),
+          language: internalLanguage,
+          embedding: new Uint8Array(new Float32Array(embedding).buffer),
+          metadata: {
+            source,
+            title,
+            ...metadata,
+          },
+        },
+        select: { id: true },
+      });
+      await this.prisma.$executeRawUnsafe(
+        'UPDATE "Chunk" SET "embedding_vec" = $1::vector WHERE "id" = $2',
+        `[${embedding.join(',')}]`,
+        created.id,
+      );
+      createdChunks.push(created);
+    }
+
+    return { ...document, chunks: createdChunks };
   }
 
-  /**
-   * Search for relevant chunks given a query
-   */
   async search({
     query,
     language,
@@ -123,22 +149,58 @@ export class RagService implements OnModuleInit, OnModuleDestroy {
     query: string;
     language?: string;
     limit?: number;
-  }) {
+  }): Promise<RagSearchResult[]> {
     const queryEmbedding = await this.generateEmbedding(query);
-    const queryEmbeddingBuffer = new Float32Array(queryEmbedding).buffer;
+    const vectorLiteral = `[${queryEmbedding.join(',')}]`;
+    const normalizedLanguage = language ? normalizeLanguage(language) : null;
 
-    // Use raw SQL for pgvector cosine distance
-    // Assuming embedding column is of type vector(1024) and we stored as bytea (but we stored as Buffer)
-    // We'll need to cast: embedding::vector
-    const results = await this.prisma.$queryRaw`
-      SELECT c.id, c.content, c.tokenCount, c.metadata,
-             1 - (c.embedding <=> ${queryEmbeddingBuffer}::vector) AS similarity
+    const rows = await this.prisma.$queryRawUnsafe<
+      Array<{
+        id: string;
+        content: string;
+        metadata: Prisma.JsonValue;
+        language: string;
+        score: number;
+      }>
+    >(
+      `SELECT
+        c."id",
+        c."content",
+        c."metadata",
+        c."language",
+        1 - (c."embedding_vec" <=> $1::vector) AS score
       FROM "Chunk" c
-      JOIN "Document" d ON c."documentId" = d.id
-      ${language ? Prisma.sql`WHERE d.language = ${language}` : Prisma.sql``}
-      ORDER BY similarity DESC
-      LIMIT ${limit}
-    `;
-    return results;
+      WHERE c."embedding_vec" IS NOT NULL
+        AND ($2::text IS NULL OR c."language" = $2)
+      ORDER BY c."embedding_vec" <=> $1::vector
+      LIMIT $3`,
+      vectorLiteral,
+      normalizedLanguage,
+      limit,
+    );
+
+    return rows
+      .filter((row) => Number(row.score) >= this.SCORE_THRESHOLD)
+      .map((row) => ({
+        ...row,
+        score: Number(row.score),
+        community: this.isCommunitySource(row.metadata),
+      }));
+  }
+
+  private isCommunitySource(metadata: Prisma.JsonValue): boolean {
+    if (!metadata || typeof metadata !== 'object' || Array.isArray(metadata)) {
+      return false;
+    }
+    const source = (metadata as Record<string, unknown>).source;
+    return typeof source === 'string' && source.startsWith('community://');
+  }
+
+  private chunkText(content: string): string[] {
+    const paragraphs = content
+      .split(/\n\s*\n/g)
+      .map((part) => part.trim())
+      .filter(Boolean);
+    return paragraphs.length > 0 ? paragraphs : [content.trim()].filter(Boolean);
   }
 }
