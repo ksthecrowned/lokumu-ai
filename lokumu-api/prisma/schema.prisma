@@ -107,3 +107,20 @@ model CommunityContribution {
   @@index([status, language])
   @@index([createdAt])
 }
+
+model TrainingDialogue {
+  id              String    @id @default(uuid())
+  title           String
+  language        String
+  turns           Json
+  tags            String[]  @default([])
+  source          String    @default("community")
+  status          String    @default("pending")
+  contributorNote String?
+  reviewedAt      DateTime?
+  exportedAt      DateTime?
+  createdAt       DateTime  @default(now())
+
+  @@index([status, language])
+  @@index([createdAt])
+}
