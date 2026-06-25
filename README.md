@@ -1,58 +1,53 @@
 # Lokumu AI
 
-Une IA locale multilingue (FR, EN, LIN, KIT) avec double mode:
-- **Chat Mode**: Assistant conversationnel avec RAG
-- **Code Mode**: Agent autonome de développement (CursorCLI-like)
+Lokumu is a local-first cultural assistant demo for Congo-focused language and culture support.
+The demo supports exactly four UI languages: `fr`, `en`, `lin`, `kit`.
 
-## Stack Technique
-- **Package Manager**: Bun (pour l'agent) + npm (pour l'API)
-- **Backend**: NestJS + Prisma + PostgreSQL (pgvector)
-- **Frontend**: Next.js 14
-- **Inference**: llama.cpp avec Qwen2.5-Coder:1.5b
-- **Embeddings**: BGE-M3 (multilingue)
+## Packages
 
-## Structure
-- `lokumu-api/` - Backend NestJS
-- `lokumu-agent/` - Agent autonome avec outils (Bun)
-- `lokumu-web/` - Frontend Next.js (en développement)
+- `lokumu-api/` - NestJS API, RAG, health endpoint, WebSocket stream, community corrections
+- `lokumu-web/` - Next.js investor demo UI
+- `lokumu-agent/` - standalone agent package
 
-## Démarrage
+## Quick start
+
 ```bash
-# Backend (npm)
+# API
 cd lokumu-api
 npm install
 npm run start:dev
 
-# Agent (Bun)
-cd lokumu-agent
-bun install
-bun run agent
-
-# Frontend
-cd lokumu-web
+# Web
+cd ../lokumu-web
 npm install
 npm run dev
 ```
 
-## Tests
-```bash
-# Backend
-cd lokumu-api
-npm test
+## Demo launcher
 
-# Agent
-cd lokumu-agent
-bun test
+Use the repo launcher to start API + web together (no root npm usage):
+
+```bash
+./start-demo.sh
 ```
 
-## Langues supportées
-- Français (fra)
-- Anglais (eng)
-- Lingala (lin)
-- Kituba (kit)
+## Pre-demo checklist
 
-## Configuration
-Copiez `.env.example` vers `.env` et configurez:
-- `DATABASE_URL` - Connexion PostgreSQL
-- `JWT_SECRET` - Clé secrète pour JWT
-- `LLM_MODEL` - Modèle Ollama (défaut: qwen2.5-coder:1.5b)# lokumu-ai
+Before an investor demo, verify each point:
+
+| Step | Verification |
+|------|--------------|
+| PostgreSQL running | `psql` connects |
+| Ollama running | `qwen3.5` appears in `curl localhost:11434/api/tags` |
+| Migrate + seed | ~30-50 chunks in DB |
+| Import user content | `cd lokumu-api && npm run ingest:cultural` logs OK |
+| API | `GET http://localhost:3001/health` returns 200 |
+| Web | Offline badge is green on `/chat` |
+| BGE-M3 cached | Model exists in `~/.cache/huggingface/` for strict offline mode |
+
+## Supported languages
+
+- French (`fra` / `fr`)
+- English (`eng` / `en`)
+- Lingala (`lin`)
+- Kituba (`kit`)
