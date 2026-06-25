@@ -1,113 +1,204 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { io, Socket } from "socket.io-client";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { ChatWindow } from "../../components/chat/ChatWindow";
+import { CorrectionForm } from "../../components/chat/CorrectionForm";
+import { SourceItem } from "../../components/chat/SourceCitation";
+import { SuggestedQuestions } from "../../components/chat/SuggestedQuestions";
+import { CommunityStats } from "../../components/demo/CommunityStats";
+import { DemoHeader } from "../../components/demo/DemoHeader";
+import { DisclaimerBanner } from "../../components/demo/DisclaimerBanner";
+import { OfflineBadge } from "../../components/demo/OfflineBadge";
+import { UiLanguage, UI_LANGUAGES } from "../../lib/languages";
+import { getSocket } from "../../lib/socket";
+
+type MessageState = {
+  id: string;
+  role: "user" | "assistant";
+  content: string;
+  sources?: SourceItem[];
+  messageId?: string;
+  conversationId?: string;
+  originalQuery?: string;
+};
+
+type StreamPayload = {
+  chunk: string;
+  done: boolean;
+  mode: "chat";
+  sources: SourceItem[];
+  messageId?: string;
+  conversationId?: string;
+};
+
+const DEFAULT_LANGUAGE = UI_LANGUAGES[0]?.code ?? "fr";
+
+function toInternalLanguage(language: UiLanguage): "fra" | "eng" | "lin" | "kit" {
+  if (language === "fr") return "fra";
+  if (language === "en") return "eng";
+  return language;
+}
 
 export default function ChatPage() {
-  const [socket, setSocket] = useState<Socket | null>(null);
-  const [message, setMessage] = useState("");
-  const [response, setResponse] = useState("");
-  const [mode, setMode] = useState<"chat" | "code">("chat");
-  const [language, setLanguage] = useState<"fr" | "en" | "lin" | "kit">("fr");
-  const [isLoading, setIsLoading] = useState(false);
+  const [language, setLanguage] = useState<UiLanguage>(DEFAULT_LANGUAGE);
+  const [prompt, setPrompt] = useState("");
+  const [messages, setMessages] = useState<MessageState[]>([]);
+  const [isStreaming, setIsStreaming] = useState(false);
+  const [notice, setNotice] = useState<string | null>(null);
+  const socketRef = useRef(getSocket());
+  const activeAssistantId = useRef<string | null>(null);
+  const latestUserPrompt = useRef<string>("");
 
-  const languageNames: Record<string, string> = {
-    fr: "Français",
-    en: "English",
-    lin: "Lingála",
-    kit: "Kitúba",
-  };
+  function submitContribution(
+    assistantMessage: MessageState,
+    correctedAnswer: string,
+    contributorNote?: string,
+  ) {
+    const originalQuery = assistantMessage.originalQuery ?? latestUserPrompt.current;
+    socketRef.current.emit("contribution:submit", {
+      conversationId: assistantMessage.conversationId,
+      messageId: assistantMessage.messageId,
+      language: toInternalLanguage(language),
+      originalQuery,
+      originalAnswer: assistantMessage.content,
+      correctedAnswer,
+      contributorNote,
+    });
+    setNotice("Correction envoyee. Merci.");
+  }
 
   useEffect(() => {
-    const s = io("http://localhost:3001");
-    setSocket(s);
+    const socket = socketRef.current;
+
+    const onStream = (payload: StreamPayload) => {
+      if (!activeAssistantId.current) return;
+
+      setMessages((current) =>
+        current.map((message) =>
+          message.id !== activeAssistantId.current
+            ? message
+            : {
+                ...message,
+                content: `${message.content}${payload.chunk}`,
+                sources: payload.sources,
+                messageId: payload.messageId ?? message.messageId,
+                conversationId: payload.conversationId ?? message.conversationId,
+              },
+        ),
+      );
+
+      if (payload.done) {
+        setIsStreaming(false);
+        activeAssistantId.current = null;
+      }
+    };
+
+    const onContributionStatus = (payload: { status: string }) => {
+      if (payload.status === "approved") {
+        setNotice("Correction approuvee et ajoutee au corpus.");
+        return;
+      }
+
+      setNotice("Correction recue. Validation en attente.");
+    };
+
+    socket.on("stream", onStream);
+    socket.on("contribution:status", onContributionStatus);
     return () => {
-      s.disconnect();
+      socket.off("stream", onStream);
+      socket.off("contribution:status", onContributionStatus);
     };
   }, []);
 
-  const sendMessage = async () => {
-    if (!socket || !message) return;
+  const chatMessages = useMemo(
+    () =>
+      messages.map((message) => ({
+        ...message,
+        correctionSlot:
+          message.role === "assistant" && message.content.trim() ? (
+            <CorrectionForm
+              onSubmit={async ({ correctedAnswer, contributorNote }) => {
+                await submitContribution(message, correctedAnswer, contributorNote);
+              }}
+            />
+          ) : undefined,
+      })),
+    [messages],
+  );
 
-    setIsLoading(true);
-    socket.emit("message", { prompt: message, language });
+  const sendPrompt = () => {
+    if (isStreaming) return;
+    if (!prompt.trim()) return;
 
-    // Reset response when sending new message
-    setResponse("");
+    const nextPrompt = prompt.trim();
+    latestUserPrompt.current = nextPrompt;
+    setPrompt("");
 
-    socket.on(
-      "stream",
-      (data: { chunk: string; done: boolean; mode: "chat" | "code" }) => {
-        setResponse((prev) => prev + data.chunk);
-        setMode(data.mode);
-      }
-    );
+    const userId = crypto.randomUUID();
+    const assistantId = crypto.randomUUID();
+    activeAssistantId.current = assistantId;
+    setIsStreaming(true);
+    setNotice(null);
+
+    setMessages((current) => [
+      ...current,
+      { id: userId, role: "user", content: nextPrompt },
+      {
+        id: assistantId,
+        role: "assistant",
+        content: "",
+        originalQuery: nextPrompt,
+      },
+    ]);
+
+    socketRef.current.emit("message", { prompt: nextPrompt, language });
   };
 
   return (
-    <div style={{ padding: "2rem", maxWidth: "800px", margin: "0 auto" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
-        <h1>Lokumu AI</h1>
-        <div>
-          <label htmlFor="language-select" style={{ marginRight: "0.5rem" }}>
-            Language:
-          </label>
-          <select
-            id="language-select"
-            value={language}
-            onChange={(e) => setLanguage(e.target.value as any)}
-            style={{ padding: "0.5rem" }}
-          >
-            {Object.entries(languageNames).map(([code, name]) => (
-              <option key={code} value={code}>
-                {name}
-              </option>
-            ))}
-          </select>
-        </div>
+    <main className="mx-auto flex w-full max-w-5xl flex-col gap-4 px-4 py-6">
+      <DemoHeader language={language} onLanguageChange={setLanguage} />
+
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <OfflineBadge />
+        <CommunityStats />
       </div>
 
-      <div style={{ marginBottom: "1rem" }}>
-        <textarea
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          placeholder="Ask me anything or request code..."
-          style={{ width: "100%", height: "100px" }}
-        />
-      </div>
+      <DisclaimerBanner />
 
-      <button
-        onClick={sendMessage}
-        disabled={!message || isLoading}
-        style={{
-          padding: "0.5rem 1rem",
-          backgroundColor: isLoading ? "#ccc" : "#0070f3",
-          color: "white",
-          border: "none",
-          borderRadius: "4px",
-          cursor: isLoading ? "not-allowed" : "pointer"
-        }}
-      >
-        {isLoading ? "Sending..." : "Send"}
-      </button>
+      <section className="space-y-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-soft">
+        <SuggestedQuestions language={language} onSelect={setPrompt} />
 
-      {mode === "chat" && (
-        <div
-          style={{ marginTop: "1.5rem", padding: "1rem", background: "#f5f5f5", borderRadius: "4px" }}
-        >
-          <h2>Response:</h2>
-          <pre>{response}</pre>
+        <ChatWindow messages={chatMessages} isTyping={isStreaming} />
+
+        <div className="space-y-2">
+          <textarea
+            value={prompt}
+            onChange={(event) => setPrompt(event.target.value)}
+            placeholder="Posez une question culturelle..."
+            rows={4}
+            className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none ring-lokumu-primary transition focus:ring-2"
+          />
+          <div className="flex items-center justify-between">
+            <p className="text-xs text-slate-500">
+              Langues supportees: {UI_LANGUAGES.map((item) => item.code).join(", ")}
+            </p>
+            <button
+              type="button"
+              onClick={sendPrompt}
+              disabled={isStreaming || !prompt.trim()}
+              className="rounded-lg bg-lokumu-primary px-4 py-2 text-sm font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {isStreaming ? "Generation..." : "Envoyer"}
+            </button>
+          </div>
         </div>
-      )}
+      </section>
 
-      {mode === "code" && (
-        <div
-          style={{ marginTop: "1.5rem", padding: "1rem", background: "#f5f5f5", borderRadius: "4px" }}
-        >
-          <h2>Generated Code:</h2>
-          <pre>{response}</pre>
+      {notice ? (
+        <div className="rounded-lg border border-emerald-300 bg-emerald-50 px-3 py-2 text-sm text-emerald-700">
+          {notice}
         </div>
-      )}
-    </div>
+      ) : null}
+    </main>
   );
 }
