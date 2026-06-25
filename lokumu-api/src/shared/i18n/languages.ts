@@ -1,7 +1,12 @@
 export type InternalLanguage = 'fra' | 'eng' | 'lin' | 'kit';
 export type UiLanguage = 'fr' | 'en' | 'lin' | 'kit';
 
-export const SUPPORTED_INTERNAL: InternalLanguage[] = ['fra', 'eng', 'lin', 'kit'];
+export const SUPPORTED_INTERNAL: InternalLanguage[] = [
+  'fra',
+  'eng',
+  'lin',
+  'kit',
+];
 
 const UI_TO_INTERNAL: Record<string, InternalLanguage> = {
   fr: 'fra',

@@ -6,13 +6,19 @@ export type OllamaMessage = {
 type OllamaChatOptions = {
   temperature?: number;
   stream?: boolean;
+  timeoutMs?: number;
 };
 
 export class OllamaClient {
+  private readonly timeoutMs: number;
+
   constructor(
-    private readonly baseUrl =
-      process.env.OLLAMA_BASE_URL ?? 'http://localhost:11434',
-  ) {}
+    private readonly baseUrl = process.env.OLLAMA_BASE_URL ??
+      'http://localhost:11434',
+    timeoutMs = Number(process.env.OLLAMA_TIMEOUT_MS ?? 180_000),
+  ) {
+    this.timeoutMs = Number.isFinite(timeoutMs) ? timeoutMs : 180_000;
+  }
 
   async chat(
     model: string,
@@ -28,7 +34,7 @@ export class OllamaClient {
         stream: false,
         options: { temperature: options.temperature ?? 0.7 },
       }),
-      signal: AbortSignal.timeout(30_000),
+      signal: AbortSignal.timeout(options.timeoutMs ?? this.timeoutMs),
     });
 
     if (!response.ok) {
@@ -55,7 +61,7 @@ export class OllamaClient {
         stream: true,
         options: { temperature: options.temperature ?? 0.7 },
       }),
-      signal: AbortSignal.timeout(30_000),
+      signal: AbortSignal.timeout(options.timeoutMs ?? this.timeoutMs),
     });
 
     if (!response.ok || !response.body) {

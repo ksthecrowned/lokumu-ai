@@ -28,11 +28,10 @@ export class CommunityService {
   }
 
   async approve(id: string) {
-    const contribution = await this.prisma.communityContribution.findUniqueOrThrow(
-      {
+    const contribution =
+      await this.prisma.communityContribution.findUniqueOrThrow({
         where: { id },
-      },
-    );
+      });
 
     const ingested = await this.ragService.ingestDocument({
       source: `community://${id}`,
@@ -59,7 +58,9 @@ export class CommunityService {
   async getStats() {
     const [totalContributions, approved, pending] = await Promise.all([
       this.prisma.communityContribution.count(),
-      this.prisma.communityContribution.count({ where: { status: 'approved' } }),
+      this.prisma.communityContribution.count({
+        where: { status: 'approved' },
+      }),
       this.prisma.communityContribution.count({ where: { status: 'pending' } }),
     ]);
     return { totalContributions, approved, pending };

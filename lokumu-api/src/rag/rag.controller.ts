@@ -1,4 +1,12 @@
-import { Controller, Post, Body, Get, Query, HttpCode, HttpStatus } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Get,
+  Query,
+  HttpCode,
+  HttpStatus,
+} from '@nestjs/common';
 import { RagService } from './rag.service';
 
 @Controller('rag')
@@ -7,7 +15,15 @@ export class RagController {
 
   @Post('ingest')
   @HttpCode(HttpStatus.CREATED)
-  async ingest(@Body() body: { source: string; title?: string; language: string; content: string }) {
+  async ingest(
+    @Body()
+    body: {
+      source: string;
+      title?: string;
+      language: string;
+      content: string;
+    },
+  ) {
     return this.ragService.ingestDocument(body);
   }
 

@@ -15,9 +15,21 @@ export function MessageBubble({
   correctionSlot,
 }: MessageBubbleProps) {
   const isUser = role === 'user';
+  const label = isUser ? 'Vous' : 'Lokumu';
+
+  if (!content.trim()) {
+    return null;
+  }
 
   return (
-    <div className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}>
+    <div className={`flex flex-col ${isUser ? 'items-end' : 'items-start'}`}>
+      <span
+        className={`mb-1 px-1 text-xs font-medium ${
+          isUser ? 'text-lokumu-primary' : 'text-slate-500'
+        }`}
+      >
+        {label}
+      </span>
       <div
         className={`max-w-[85%] rounded-2xl px-4 py-3 shadow-soft ${
           isUser
@@ -29,7 +41,7 @@ export function MessageBubble({
         {!isUser && sources.length > 0 ? (
           <div className="mt-3 space-y-2">
             <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-              Sources
+              Source
             </p>
             {sources.map((source) => (
               <SourceCitation key={source.id} source={source} />

@@ -75,6 +75,7 @@ lokumu-ai/
 ### Task 1: Structural cleanup & rename `agent/` → `assistant/`
 
 **Files:**
+
 - Rename: `lokumu-api/src/agent/` → `lokumu-api/src/assistant/`
 - Modify: `lokumu-api/src/app.module.ts`
 - Modify: `lokumu-api/src/chat/chat.gateway.ts`
@@ -83,11 +84,13 @@ lokumu-ai/
 - Delete: root `cat` file if still tracked
 
 **Interfaces:**
-- Produces: `AssistantModule`, `AssistantService` (renamed from Agent*)
+
+- Produces: `AssistantModule`, `AssistantService` (renamed from Agent\*)
 
 - [ ] **Step 1: Rename files and exports**
 
 Rename directory and files:
+
 - `agent.module.ts` → `assistant.module.ts`
 - `agent.service.ts` → `assistant.service.ts`
 - `agent.controller.ts` → `assistant.controller.ts`
@@ -140,29 +143,31 @@ git commit -m "refactor(api): rename agent module to assistant"
 ### Task 2: Centralized language codes (`shared/i18n/languages.ts`)
 
 **Files:**
+
 - Create: `lokumu-api/src/shared/i18n/languages.ts`
 - Create: `lokumu-api/src/shared/i18n/languages.spec.ts`
 - Create: `lokumu-web/src/lib/languages.ts`
 
 **Interfaces:**
+
 - Produces: `normalizeLanguage(uiCode: string): InternalLanguage`, `SUPPORTED_LANGUAGES`, `InternalLanguage`, `UiLanguage`
 
 - [ ] **Step 1: Write failing API test**
 
 ```typescript
 // lokumu-api/src/shared/i18n/languages.spec.ts
-import { normalizeLanguage, SUPPORTED_INTERNAL } from './languages';
+import { normalizeLanguage, SUPPORTED_INTERNAL } from "./languages";
 
-describe('languages', () => {
-  it('maps UI codes to ISO 639-3', () => {
-    expect(normalizeLanguage('fr')).toBe('fra');
-    expect(normalizeLanguage('en')).toBe('eng');
-    expect(normalizeLanguage('lin')).toBe('lin');
-    expect(normalizeLanguage('kit')).toBe('kit');
+describe("languages", () => {
+  it("maps UI codes to ISO 639-3", () => {
+    expect(normalizeLanguage("fr")).toBe("fra");
+    expect(normalizeLanguage("en")).toBe("eng");
+    expect(normalizeLanguage("lin")).toBe("lin");
+    expect(normalizeLanguage("kit")).toBe("kit");
   });
 
-  it('supports only 4 languages', () => {
-    expect(SUPPORTED_INTERNAL).toEqual(['fra', 'eng', 'lin', 'kit']);
+  it("supports only 4 languages", () => {
+    expect(SUPPORTED_INTERNAL).toEqual(["fra", "eng", "lin", "kit"]);
   });
 });
 ```
@@ -176,41 +181,49 @@ Expected: FAIL — module not found
 
 ```typescript
 // lokumu-api/src/shared/i18n/languages.ts
-export type InternalLanguage = 'fra' | 'eng' | 'lin' | 'kit';
-export type UiLanguage = 'fr' | 'en' | 'lin' | 'kit';
+export type InternalLanguage = "fra" | "eng" | "lin" | "kit";
+export type UiLanguage = "fr" | "en" | "lin" | "kit";
 
-export const SUPPORTED_INTERNAL: InternalLanguage[] = ['fra', 'eng', 'lin', 'kit'];
+export const SUPPORTED_INTERNAL: InternalLanguage[] = [
+  "fra",
+  "eng",
+  "lin",
+  "kit",
+];
 
 const UI_TO_INTERNAL: Record<string, InternalLanguage> = {
-  fr: 'fra', fra: 'fra',
-  en: 'eng', eng: 'eng',
-  lin: 'lin', lg: 'lin',
-  kit: 'kit',
+  fr: "fra",
+  fra: "fra",
+  en: "eng",
+  eng: "eng",
+  lin: "lin",
+  lg: "lin",
+  kit: "kit",
 };
 
 export function normalizeLanguage(code?: string): InternalLanguage {
-  if (!code) return 'fra';
+  if (!code) return "fra";
   const key = code.toLowerCase().slice(0, 3);
-  return UI_TO_INTERNAL[key] ?? UI_TO_INTERNAL[code.toLowerCase()] ?? 'fra';
+  return UI_TO_INTERNAL[key] ?? UI_TO_INTERNAL[code.toLowerCase()] ?? "fra";
 }
 
 export const LANGUAGE_LABELS: Record<UiLanguage, string> = {
-  fr: 'Français',
-  en: 'English',
-  lin: 'Lingála',
-  kit: 'Kitúba',
+  fr: "Français",
+  en: "English",
+  lin: "Lingála",
+  kit: "Kitúba",
 };
 ```
 
 ```typescript
 // lokumu-web/src/lib/languages.ts
-export type UiLanguage = 'fr' | 'en' | 'lin' | 'kit';
+export type UiLanguage = "fr" | "en" | "lin" | "kit";
 
 export const UI_LANGUAGES: { code: UiLanguage; label: string }[] = [
-  { code: 'fr', label: 'Français' },
-  { code: 'en', label: 'English' },
-  { code: 'lin', label: 'Lingála' },
-  { code: 'kit', label: 'Kitúba' },
+  { code: "fr", label: "Français" },
+  { code: "en", label: "English" },
+  { code: "lin", label: "Lingála" },
+  { code: "kit", label: "Kitúba" },
 ];
 ```
 
@@ -231,6 +244,7 @@ git commit -m "feat: centralize language code mapping (4 languages)"
 ### Task 3: Remove Swahili & update multilingual prompts
 
 **Files:**
+
 - Modify: `lokumu-api/src/prompts/multilingual.ts`
 - Modify: `lokumu-api/src/prompts/multilingual.spec.ts`
 - Create: `lokumu-api/src/prompts/cultural.prompt.ts`
@@ -243,11 +257,11 @@ git commit -m "feat: centralize language code mapping (4 languages)"
 // lokumu-api/src/prompts/multilingual.spec.ts
 // Remove the swa/sw test block entirely
 // Add test for cultural prompt inclusion:
-import { buildCulturalSystemPrompt } from './cultural.prompt';
+import { buildCulturalSystemPrompt } from "./cultural.prompt";
 
-it('builds cultural system prompt for lin', () => {
-  expect(buildCulturalSystemPrompt('lin')).toContain('Lokumu');
-  expect(buildCulturalSystemPrompt('lin')).toContain('local');
+it("builds cultural system prompt for lin", () => {
+  expect(buildCulturalSystemPrompt("lin")).toContain("Lokumu");
+  expect(buildCulturalSystemPrompt("lin")).toContain("local");
 });
 ```
 
@@ -260,7 +274,7 @@ Expected: FAIL on new cultural prompt import
 
 ```typescript
 // lokumu-api/src/prompts/cultural.prompt.ts
-import { InternalLanguage } from '../shared/i18n/languages';
+import { InternalLanguage } from "../shared/i18n/languages";
 
 const CULTURAL_PROMPTS: Record<InternalLanguage, string> = {
   fra: `Tu es Lokumu, assistant culturel et linguistique congolais.
@@ -297,7 +311,7 @@ export function buildRagPrompt(
 ): string {
   const contextBlock = context
     ? `[CONTEXTE CULTUREL]\n${context}\n[/CONTEXTE CULTUREL]\n\n`
-    : '';
+    : "";
   return `${contextBlock}Historique:\n${history}\n\nQuestion: ${userMessage}\n\nRéponds en ${lang}. Cite les sources du contexte quand pertinent.`;
 }
 ```
@@ -321,10 +335,12 @@ git commit -m "feat: cultural prompts and remove Swahili support"
 ### Task 4: Prisma schema — CommunityContribution + pgvector
 
 **Files:**
+
 - Modify: `lokumu-api/prisma/schema.prisma`
 - Create: `lokumu-api/prisma/migrations/20260625120000_community_pgvector/migration.sql`
 
 **Interfaces:**
+
 - Produces: `CommunityContribution` Prisma model, pgvector `vector(1024)` on `Chunk.embedding`
 
 - [ ] **Step 1: Add model to schema**
@@ -407,6 +423,7 @@ git commit -m "feat(db): add CommunityContribution and pgvector column"
 ### Task 5: Cultural corpus seed & ingest script
 
 **Files:**
+
 - Create: `data/cultural/.gitkeep`
 - Create: `data/cultural/README.md`
 - Create: `lokumu-api/prisma/seed/cultural-corpus.ts`
@@ -416,6 +433,7 @@ git commit -m "feat(db): add CommunityContribution and pgvector column"
 - Delete: `lokumu-api/seed-demo-content.ts` (moved)
 
 **Interfaces:**
+
 - Produces: `CULTURAL_ENTRIES` array, `npm run seed`, `npm run ingest:cultural`
 
 - [ ] **Step 1: Create seed data file with 30+ entries**
@@ -424,8 +442,8 @@ git commit -m "feat(db): add CommunityContribution and pgvector column"
 // lokumu-api/prisma/seed/cultural-corpus.ts
 export interface CulturalEntry {
   id: string;
-  type: 'proverb' | 'greeting' | 'expression' | 'cultural_note' | 'dialogue';
-  language: 'fra' | 'eng' | 'lin' | 'kit';
+  type: "proverb" | "greeting" | "expression" | "cultural_note" | "dialogue";
+  language: "fra" | "eng" | "lin" | "kit";
   title: string;
   content: string;
   translation_fr?: string;
@@ -435,24 +453,24 @@ export interface CulturalEntry {
 
 export const CULTURAL_ENTRIES: CulturalEntry[] = [
   {
-    id: 'greeting-lin-001',
-    type: 'greeting',
-    language: 'lin',
-    title: 'Salutation courante',
-    content: 'Mbote! Ezali ndenge nini?',
-    translation_fr: 'Bonjour! Comment ça va?',
-    tags: ['salutation'],
-    source: 'seed',
+    id: "greeting-lin-001",
+    type: "greeting",
+    language: "lin",
+    title: "Salutation courante",
+    content: "Mbote! Ezali ndenge nini?",
+    translation_fr: "Bonjour! Comment ça va?",
+    tags: ["salutation"],
+    source: "seed",
   },
   {
-    id: 'greeting-kit-001',
-    type: 'greeting',
-    language: 'kit',
-    title: 'Salutation kituba',
-    content: 'Mbote! Ngeyi kufwana?',
-    translation_fr: 'Bonjour! Comment vas-tu?',
-    tags: ['salutation'],
-    source: 'seed',
+    id: "greeting-kit-001",
+    type: "greeting",
+    language: "kit",
+    title: "Salutation kituba",
+    content: "Mbote! Ngeyi kufwana?",
+    translation_fr: "Bonjour! Comment vas-tu?",
+    tags: ["salutation"],
+    source: "seed",
   },
   // ... add 28+ more entries (12-15 lin, 12-15 kit, 5-8 fra, 3-5 eng)
   // Each proverb/expression must be validated Lingala/Kituba — no placeholder garbage
@@ -463,11 +481,11 @@ export const CULTURAL_ENTRIES: CulturalEntry[] = [
 
 ```typescript
 // lokumu-api/prisma/seed/index.ts
-import { PrismaClient } from '@prisma/client';
-import { PrismaPg } from '@prisma/adapter-pg';
-import { RagService } from '../../src/rag/rag.service';
-import { PrismaService } from '../../src/prisma/prisma.service';
-import { CULTURAL_ENTRIES } from './cultural-corpus';
+import { PrismaClient } from "@prisma/client";
+import { PrismaPg } from "@prisma/adapter-pg";
+import { RagService } from "../../src/rag/rag.service";
+import { PrismaService } from "../../src/prisma/prisma.service";
+import { CULTURAL_ENTRIES } from "./cultural-corpus";
 
 async function main() {
   const adapter = new PrismaPg(process.env.DATABASE_URL!);
@@ -491,15 +509,18 @@ async function main() {
   await prisma.$disconnect();
 }
 
-main().catch((e) => { console.error(e); process.exit(1); });
+main().catch((e) => {
+  console.error(e);
+  process.exit(1);
+});
 ```
 
 - [ ] **Step 3: Ingest script for data/cultural/**
 
 ```typescript
 // lokumu-api/scripts/ingest-cultural.ts
-import { readdir, readFile } from 'fs/promises';
-import { join, extname } from 'path';
+import { readdir, readFile } from "fs/promises";
+import { join, extname } from "path";
 // Parse .json files matching CulturalEntry schema
 // Call RagService.ingestDocument for each
 // Usage: npx ts-node scripts/ingest-cultural.ts ../data/cultural
@@ -530,10 +551,12 @@ git commit -m "feat: cultural corpus seed and ingest script"
 ### Task 6: RAG service — real BGE-M3 embeddings + pgvector search
 
 **Files:**
+
 - Modify: `lokumu-api/src/rag/rag.service.ts`
 - Modify: `lokumu-api/src/rag/rag.service.spec.ts`
 
 **Interfaces:**
+
 - Consumes: `normalizeLanguage` from `shared/i18n/languages.ts`
 - Produces: `search()` returning `{ id, content, metadata, language, score, community: boolean }[]`
 - Produces: `ingestDocument()` writing to `embedding_vec` column
@@ -542,14 +565,14 @@ git commit -m "feat: cultural corpus seed and ingest script"
 
 ```typescript
 // lokumu-api/src/rag/rag.service.spec.ts
-it('returns chunks ordered by similarity score', async () => {
+it("returns chunks ordered by similarity score", async () => {
   const results = await service.search({
-    query: 'mbote salutation',
-    language: 'lin',
+    query: "mbote salutation",
+    language: "lin",
     limit: 3,
   });
   expect(results.length).toBeGreaterThan(0);
-  expect(results[0]).toHaveProperty('score');
+  expect(results[0]).toHaveProperty("score");
   expect(results[0].score).toBeGreaterThan(0);
 });
 ```
@@ -620,7 +643,7 @@ After creating chunk via Prisma, run:
 ```typescript
 await this.prisma.$executeRawUnsafe(
   `UPDATE "Chunk" SET "embedding_vec" = $1::vector WHERE id = $2`,
-  `[${chunk.embedding.join(',')}]`,
+  `[${chunk.embedding.join(",")}]`,
   chunkId,
 );
 ```
@@ -642,12 +665,14 @@ git commit -m "feat(rag): real BGE-M3 embeddings and pgvector search"
 ### Task 7: Ollama client & ModelService migration
 
 **Files:**
+
 - Create: `lokumu-api/src/model/ollama.client.ts`
 - Create: `lokumu-api/src/model/ollama.client.spec.ts`
 - Modify: `lokumu-api/src/model/model.service.ts`
 - Modify: `lokumu-api/.env.example`
 
 **Interfaces:**
+
 - Produces: `OllamaClient.chat(messages, { stream, model })` → `AsyncGenerator<string>` or `Promise<string>`
 - Produces: `ModelService.generate()` and `ModelService.generateStream()` using Ollama
 
@@ -655,17 +680,19 @@ git commit -m "feat(rag): real BGE-M3 embeddings and pgvector search"
 
 ```typescript
 // lokumu-api/src/model/ollama.client.spec.ts
-import { OllamaClient } from './ollama.client';
+import { OllamaClient } from "./ollama.client";
 
 global.fetch = jest.fn().mockResolvedValue({
   ok: true,
-  json: async () => ({ message: { content: 'Mbote!' } }),
+  json: async () => ({ message: { content: "Mbote!" } }),
 }) as jest.Mock;
 
-it('calls Ollama chat API', async () => {
-  const client = new OllamaClient('http://localhost:11434');
-  const result = await client.chat('qwen3.5', [{ role: 'user', content: 'Bonjour' }]);
-  expect(result).toBe('Mbote!');
+it("calls Ollama chat API", async () => {
+  const client = new OllamaClient("http://localhost:11434");
+  const result = await client.chat("qwen3.5", [
+    { role: "user", content: "Bonjour" },
+  ]);
+  expect(result).toBe("Mbote!");
 });
 ```
 
@@ -674,7 +701,9 @@ it('calls Ollama chat API', async () => {
 ```typescript
 // lokumu-api/src/model/ollama.client.ts
 export class OllamaClient {
-  constructor(private baseUrl = process.env.OLLAMA_BASE_URL ?? 'http://localhost:11434') {}
+  constructor(
+    private baseUrl = process.env.OLLAMA_BASE_URL ?? "http://localhost:11434",
+  ) {}
 
   async chat(
     model: string,
@@ -682,8 +711,8 @@ export class OllamaClient {
     options: { temperature?: number; stream?: boolean } = {},
   ): Promise<string> {
     const res = await fetch(`${this.baseUrl}/api/chat`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         model,
         messages,
@@ -694,7 +723,7 @@ export class OllamaClient {
     });
     if (!res.ok) throw new Error(`ollama_unavailable: ${res.status}`);
     const data = await res.json();
-    return data.message?.content ?? '';
+    return data.message?.content ?? "";
   }
 
   async *chatStream(
@@ -702,21 +731,21 @@ export class OllamaClient {
     messages: { role: string; content: string }[],
   ): AsyncGenerator<string> {
     const res = await fetch(`${this.baseUrl}/api/chat`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ model, messages, stream: true }),
       signal: AbortSignal.timeout(30_000),
     });
     if (!res.ok) throw new Error(`ollama_unavailable: ${res.status}`);
     const reader = res.body!.getReader();
     const decoder = new TextDecoder();
-    let buffer = '';
+    let buffer = "";
     while (true) {
       const { done, value } = await reader.read();
       if (done) break;
       buffer += decoder.decode(value, { stream: true });
-      const lines = buffer.split('\n');
-      buffer = lines.pop() ?? '';
+      const lines = buffer.split("\n");
+      buffer = lines.pop() ?? "";
       for (const line of lines) {
         if (!line.trim()) continue;
         const parsed = JSON.parse(line);
@@ -727,7 +756,9 @@ export class OllamaClient {
 
   async isAvailable(): Promise<boolean> {
     try {
-      const res = await fetch(`${this.baseUrl}/api/tags`, { signal: AbortSignal.timeout(3000) });
+      const res = await fetch(`${this.baseUrl}/api/tags`, {
+        signal: AbortSignal.timeout(7000),
+      });
       return res.ok;
     } catch {
       return false;
@@ -738,7 +769,9 @@ export class OllamaClient {
     const res = await fetch(`${this.baseUrl}/api/tags`);
     if (!res.ok) return false;
     const data = await res.json();
-    return (data.models ?? []).some((m: { name: string }) => m.name.startsWith(name));
+    return (data.models ?? []).some((m: { name: string }) =>
+      m.name.startsWith(name),
+    );
   }
 }
 ```
@@ -751,22 +784,33 @@ export class OllamaClient {
 export class ModelService {
   private ollama = new OllamaClient();
 
-  async generate(prompt: string, options?: { temperature?: number }): Promise<string> {
-    const primary = process.env.OLLAMA_MODEL ?? 'qwen3.5';
-    const fallback = process.env.OLLAMA_FALLBACK_MODEL ?? 'deepseek-coder';
+  async generate(
+    prompt: string,
+    options?: { temperature?: number },
+  ): Promise<string> {
+    const primary = process.env.OLLAMA_MODEL ?? "qwen3.5";
+    const fallback = process.env.OLLAMA_FALLBACK_MODEL ?? "deepseek-coder";
     try {
       if (await this.ollama.hasModel(primary)) {
-        return await this.ollama.chat(primary, [{ role: 'user', content: prompt }], options);
+        return await this.ollama.chat(
+          primary,
+          [{ role: "user", content: prompt }],
+          options,
+        );
       }
-      return await this.ollama.chat(fallback, [{ role: 'user', content: prompt }], options);
+      return await this.ollama.chat(
+        fallback,
+        [{ role: "user", content: prompt }],
+        options,
+      );
     } catch (e) {
-      throw new Error('ollama_unavailable');
+      throw new Error("ollama_unavailable");
     }
   }
 
   generateStream(prompt: string): AsyncGenerator<string> {
-    const model = process.env.OLLAMA_MODEL ?? 'qwen3.5';
-    return this.ollama.chatStream(model, [{ role: 'user', content: prompt }]);
+    const model = process.env.OLLAMA_MODEL ?? "qwen3.5";
+    return this.ollama.chatStream(model, [{ role: "user", content: prompt }]);
   }
 }
 ```
@@ -788,11 +832,13 @@ git commit -m "feat(model): migrate inference to Ollama HTTP client"
 ### Task 8: Cultural router & AssistantService (chat-only demo)
 
 **Files:**
+
 - Create: `lokumu-api/src/assistant/cultural-router.ts`
 - Create: `lokumu-api/src/assistant/cultural-router.spec.ts`
 - Modify: `lokumu-api/src/assistant/assistant.service.ts`
 
 **Interfaces:**
+
 - Produces: `shouldUseRag(prompt: string): boolean`
 - Produces: `AssistantService.processRequest()` → `{ response, sources, messageId, conversationId }`
 
@@ -800,15 +846,15 @@ git commit -m "feat(model): migrate inference to Ollama HTTP client"
 
 ```typescript
 // lokumu-api/src/assistant/cultural-router.spec.ts
-import { shouldUseRag } from './cultural-router';
+import { shouldUseRag } from "./cultural-router";
 
-it('forces RAG for cultural keywords', () => {
-  expect(shouldUseRag('Donne-moi un proverbe lingala')).toBe(true);
-  expect(shouldUseRag('Comment dit-on mbote')).toBe(true);
+it("forces RAG for cultural keywords", () => {
+  expect(shouldUseRag("Donne-moi un proverbe lingala")).toBe(true);
+  expect(shouldUseRag("Comment dit-on mbote")).toBe(true);
 });
 
-it('skips RAG for general chat', () => {
-  expect(shouldUseRag('Quel temps fait-il')).toBe(false);
+it("skips RAG for general chat", () => {
+  expect(shouldUseRag("Quel temps fait-il")).toBe(false);
 });
 ```
 
@@ -885,6 +931,7 @@ git commit -m "feat(assistant): cultural RAG routing and chat-only demo mode"
 ### Task 9: Community module
 
 **Files:**
+
 - Create: `lokumu-api/src/community/community.module.ts`
 - Create: `lokumu-api/src/community/community.service.ts`
 - Create: `lokumu-api/src/community/community.controller.ts`
@@ -893,6 +940,7 @@ git commit -m "feat(assistant): cultural RAG routing and chat-only demo mode"
 - Modify: `lokumu-api/src/app.module.ts`
 
 **Interfaces:**
+
 - Produces: `CommunityService.submit(dto)`, `approve(id)`, `getStats()`
 - Consumes: `RagService.ingestDocument`
 
@@ -900,15 +948,15 @@ git commit -m "feat(assistant): cultural RAG routing and chat-only demo mode"
 
 ```typescript
 // lokumu-api/src/community/community.service.spec.ts
-it('approves contribution and sets ingestedAt', async () => {
+it("approves contribution and sets ingestedAt", async () => {
   const contribution = await service.submit({
-    language: 'lin',
-    originalQuery: 'Mbote?',
-    originalAnswer: 'wrong',
-    correctedAnswer: 'Mbote !',
+    language: "lin",
+    originalQuery: "Mbote?",
+    originalAnswer: "wrong",
+    correctedAnswer: "Mbote !",
   });
   const approved = await service.approve(contribution.id);
-  expect(approved.status).toBe('approved');
+  expect(approved.status).toBe("approved");
   expect(approved.ingestedAt).not.toBeNull();
 });
 ```
@@ -925,33 +973,44 @@ export class CommunityService {
   ) {}
 
   async submit(dto: CreateContributionDto) {
-    const contribution = await this.prisma.communityContribution.create({ data: { ...dto, status: 'pending' } });
-    if (process.env.COMMUNITY_AUTO_APPROVE === 'true') {
+    const contribution = await this.prisma.communityContribution.create({
+      data: { ...dto, status: "pending" },
+    });
+    if (process.env.COMMUNITY_AUTO_APPROVE === "true") {
       return this.approve(contribution.id);
     }
     return contribution;
   }
 
   async approve(id: string) {
-    const c = await this.prisma.communityContribution.findUniqueOrThrow({ where: { id } });
+    const c = await this.prisma.communityContribution.findUniqueOrThrow({
+      where: { id },
+    });
     const doc = await this.rag.ingestDocument({
       source: `community://${id}`,
       title: `Correction: ${c.originalQuery.slice(0, 80)}`,
       language: normalizeLanguage(c.language),
-      content: `Q: ${c.originalQuery}\nR: ${c.correctedAnswer}\nNote: ${c.contributorNote ?? ''}`,
+      content: `Q: ${c.originalQuery}\nR: ${c.correctedAnswer}\nNote: ${c.contributorNote ?? ""}`,
     });
     const chunkId = doc.chunks?.[0]?.id ?? null;
     return this.prisma.communityContribution.update({
       where: { id },
-      data: { status: 'approved', reviewedAt: new Date(), ingestedAt: new Date(), chunkId },
+      data: {
+        status: "approved",
+        reviewedAt: new Date(),
+        ingestedAt: new Date(),
+        chunkId,
+      },
     });
   }
 
   async getStats() {
     const [total, approved, pending] = await Promise.all([
       this.prisma.communityContribution.count(),
-      this.prisma.communityContribution.count({ where: { status: 'approved' } }),
-      this.prisma.communityContribution.count({ where: { status: 'pending' } }),
+      this.prisma.communityContribution.count({
+        where: { status: "approved" },
+      }),
+      this.prisma.communityContribution.count({ where: { status: "pending" } }),
     ]);
     return { totalContributions: total, approved, pending };
   }
@@ -983,19 +1042,21 @@ git commit -m "feat(community): user corrections with RAG ingest"
 ### Task 10: Health endpoint & enriched ChatGateway
 
 **Files:**
+
 - Create: `lokumu-api/src/health/health.module.ts`
 - Create: `lokumu-api/src/health/health.controller.ts`
 - Modify: `lokumu-api/src/chat/chat.gateway.ts`
 - Modify: `lokumu-api/src/app.module.ts`
 
 **Interfaces:**
+
 - Produces: `GET /health` JSON per spec
 - Produces: WebSocket `stream` events with `sources`, `messageId`; `contribution:submit` handler
 
 - [ ] **Step 1: Health controller**
 
 ```typescript
-@Controller('health')
+@Controller("health")
 export class HealthController {
   @Get()
   async check() {
@@ -1009,7 +1070,8 @@ export class HealthController {
       chunksCount = await this.prisma.chunk.count();
       embeddings = !!this.rag.isModelLoaded();
     } catch {}
-    const status = ollama && database ? (embeddings ? 'ok' : 'degraded') : 'down';
+    const status =
+      ollama && database ? (embeddings ? "ok" : "degraded") : "down";
     return { status, ollama, database, embeddings, chunksCount };
   }
 }
@@ -1054,6 +1116,7 @@ git commit -m "feat: health endpoint and enriched chat streaming"
 ### Task 11: Tailwind setup & web lib layer
 
 **Files:**
+
 - Create: `lokumu-web/tailwind.config.ts`
 - Create: `lokumu-web/postcss.config.js`
 - Create: `lokumu-web/src/styles/globals.css`
@@ -1088,13 +1151,13 @@ theme: {
 
 ```typescript
 // lokumu-web/src/lib/socket.ts
-import { io, Socket } from 'socket.io-client';
+import { io, Socket } from "socket.io-client";
 
 let socket: Socket | null = null;
 
 export function getSocket(): Socket {
   if (!socket) {
-    socket = io(process.env.NEXT_PUBLIC_WS_URL ?? 'http://localhost:3001');
+    socket = io(process.env.NEXT_PUBLIC_WS_URL ?? "http://localhost:7001");
   }
   return socket;
 }
@@ -1117,8 +1180,10 @@ export async function fetchCommunityStats() {
 - [ ] **Step 6: page.tsx redirect**
 
 ```typescript
-import { redirect } from 'next/navigation';
-export default function Home() { redirect('/chat'); }
+import { redirect } from "next/navigation";
+export default function Home() {
+  redirect("/chat");
+}
 ```
 
 - [ ] **Step 7: Commit**
@@ -1133,6 +1198,7 @@ git commit -m "feat(web): Tailwind setup and lib layer"
 ### Task 12: Investor demo UI components
 
 **Files:**
+
 - Create: all files under `lokumu-web/src/components/chat/` and `components/demo/`
 - Rewrite: `lokumu-web/src/app/chat/page.tsx`
 
@@ -1141,6 +1207,7 @@ git commit -m "feat(web): Tailwind setup and lib layer"
 Implement `DemoHeader`, `OfflineBadge` (polls `/health` every 10s), `DisclaimerBanner`, `CommunityStats`.
 
 `OfflineBadge` logic:
+
 - Green: `status === 'ok'`
 - Orange: `status === 'degraded'`
 - Red: `status === 'down'`
@@ -1151,10 +1218,10 @@ Implement `DemoHeader`, `OfflineBadge` (polls `/health` every 10s), `DisclaimerB
 
 ```typescript
 const SUGGESTIONS: Record<UiLanguage, string[]> = {
-  fr: ['Donne-moi un proverbe lingala', 'Comment dit-on merci en kituba ?'],
-  en: ['Tell me a Lingala proverb', 'How do you greet in Kituba?'],
-  lin: ['Lobí proverbe moko ya lingala', 'Ndenge nini ya kopesa mbote'],
-  kit: ['Zola mvutu ya kituta', 'Ndenge nini ya kupesa mbote'],
+  fr: ["Donne-moi un proverbe lingala", "Comment dit-on merci en kituba ?"],
+  en: ["Tell me a Lingala proverb", "How do you greet in Kituba?"],
+  lin: ["Lobí proverbe moko ya lingala", "Ndenge nini ya kopesa mbote"],
+  kit: ["Zola mvutu ya kituta", "Ndenge nini ya kupesa mbote"],
 };
 ```
 
@@ -1167,7 +1234,7 @@ Replace inline styles in `chat/page.tsx` with component tree; remove code mode U
 - [ ] **Step 4: Visual check**
 
 Run: `cd lokumu-web && npm run dev`
-Open: `http://localhost:3000/chat`
+Open: `http://localhost:7000/chat`
 Expected: polished UI, language picker, suggested chips, disclaimer
 
 - [ ] **Step 5: Commit**
@@ -1182,6 +1249,7 @@ git commit -m "feat(web): investor demo chat UI"
 ### Task 13: Demo launcher, docs & agent STRUCTURE.md
 
 **Files:**
+
 - Create: `start-demo.sh`
 - Modify: `README.md`
 - Modify: `lokumu-agent/STRUCTURE.md`
@@ -1206,7 +1274,7 @@ API_PID=$!
 WEB_PID=$!
 
 echo "API PID: $API_PID | Web PID: $WEB_PID"
-echo "Demo: http://localhost:3000/chat"
+echo "Demo: http://localhost:7000/chat"
 wait
 ```
 
@@ -1238,14 +1306,14 @@ git commit -m "docs: demo launcher script and pre-demo checklist"
 
 - [ ] **Step 3: Verify DoD items**
 
-| Criterion | Pass? |
-|-----------|-------|
-| 4 languages, no Swahili | |
-| ≥ 30 cultural chunks | |
-| ≥ 3 chips return citations | |
-| Correction flow < 60s | |
-| CommunityStats visible | |
-| No root package.json | |
+| Criterion                  | Pass? |
+| -------------------------- | ----- |
+| 4 languages, no Swahili    |       |
+| ≥ 30 cultural chunks       |       |
+| ≥ 3 chips return citations |       |
+| Correction flow < 60s      |       |
+| CommunityStats visible     |       |
+| No root package.json       |       |
 
 - [ ] **Step 4: Final commit if any fixes**
 
@@ -1257,22 +1325,22 @@ git commit -m "fix: address E2E demo verification issues"
 
 ## Spec Coverage Checklist
 
-| Spec section | Task |
-|--------------|------|
-| 1.1 No root package.json | Task 13, Global Constraints |
-| 1.2 Rename agent→assistant | Task 1 |
-| 1.2 Remove SWA | Task 3 |
-| 1.2 Seed relocation | Task 5 |
-| 1.2 data/cultural/ | Task 5 |
-| 2.1 Corpus format | Task 5 |
-| 2.3 RAG BGE-M3 + pgvector | Task 6 |
-| 2.4 Prompts | Task 3 |
-| 2.6 Ollama | Task 7 |
-| 3 Community Memory | Task 9 |
-| 4 Investor UI | Tasks 11–12 |
-| 5.1 Pre-demo checklist | Task 13 |
-| 5.3 Error handling | Task 10 |
-| 5.6 Definition of Done | Task 14 |
+| Spec section               | Task                        |
+| -------------------------- | --------------------------- |
+| 1.1 No root package.json   | Task 13, Global Constraints |
+| 1.2 Rename agent→assistant | Task 1                      |
+| 1.2 Remove SWA             | Task 3                      |
+| 1.2 Seed relocation        | Task 5                      |
+| 1.2 data/cultural/         | Task 5                      |
+| 2.1 Corpus format          | Task 5                      |
+| 2.3 RAG BGE-M3 + pgvector  | Task 6                      |
+| 2.4 Prompts                | Task 3                      |
+| 2.6 Ollama                 | Task 7                      |
+| 3 Community Memory         | Task 9                      |
+| 4 Investor UI              | Tasks 11–12                 |
+| 5.1 Pre-demo checklist     | Task 13                     |
+| 5.3 Error handling         | Task 10                     |
+| 5.6 Definition of Done     | Task 14                     |
 
 ## Self-Review Notes
 

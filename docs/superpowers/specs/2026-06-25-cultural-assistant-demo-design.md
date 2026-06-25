@@ -1,7 +1,7 @@
 # Lokumu Cultural Assistant — Investor Demo Design
 
-**Date:** 2026-06-25  
-**Status:** Approved (brainstorming)  
+**Date:** 2026-06-25
+**Status:** Approved (brainstorming)
 **Scope:** Visual multilingual cultural assistant for investor demos (offline-first)
 
 ## Vision
@@ -19,15 +19,15 @@ Lokumu is a local, sovereign AI for Congolese languages. Long-term goals include
 
 ## Decisions Summary
 
-| Topic | Decision |
-|-------|----------|
-| Demo scenario | Cultural/linguistic assistant (LIN + KIT focus) |
-| Content | Natural conversation + cultural corpus (~30–50 entries) |
+| Topic              | Decision                                                        |
+| ------------------ | --------------------------------------------------------------- |
+| Demo scenario      | Cultural/linguistic assistant (LIN + KIT focus)                 |
+| Content            | Natural conversation + cultural corpus (~30–50 entries)         |
 | Community learning | RAG memory (approved contributions) + user feedback corrections |
-| Infrastructure | 100% offline — Ollama + PostgreSQL, no mandatory cloud |
-| Languages | `fra`, `eng`, `lin`, `kit` — Swahili removed |
-| Approach | Demo Platform: polished UI + real RAG + community memory |
-| Repo cleanup | Included in demo scope; no root `package.json` / `node_modules` |
+| Infrastructure     | 100% offline — Ollama + PostgreSQL, no mandatory cloud          |
+| Languages          | `fra`, `eng`, `lin`, `kit` — Swahili removed                    |
+| Approach           | Demo Platform: polished UI + real RAG + community memory        |
+| Repo cleanup       | Included in demo scope; no root `package.json` / `node_modules` |
 
 ---
 
@@ -56,16 +56,16 @@ Demo startup: three terminals or `./start-demo.sh` invoking commands inside each
 
 ### 1.2 Structural cleanup (in demo scope)
 
-| Action | Detail |
-|--------|--------|
-| Rename `lokumu-api/src/agent/` → `assistant/` | Chat orchestration; reserve "agent" for Dev Agent CLI |
-| Remove Swahili | UI, prompts, seed, schema comments, README, legacy specs |
-| Move seed | `seed-demo-content.ts` → `lokumu-api/prisma/seed/cultural-corpus.ts` |
-| Add `data/cultural/` | User content import via `lokumu-api/scripts/ingest-cultural.ts` |
-| Delete `lokumu-agent/src/runtime/Untitled` | Orphan file |
-| One lockfile per package | `bun.lock` OR `package-lock.json` in `lokumu-api`, not both |
-| Update `lokumu-agent/STRUCTURE.md` | Reflect actual file tree |
-| Add `shared/i18n/languages.ts` | Single source: `fra`, `eng`, `lin`, `kit`; web maps `fr`/`en` at boundary |
+| Action                                        | Detail                                                                    |
+| --------------------------------------------- | ------------------------------------------------------------------------- |
+| Rename `lokumu-api/src/agent/` → `assistant/` | Chat orchestration; reserve "agent" for Dev Agent CLI                     |
+| Remove Swahili                                | UI, prompts, seed, schema comments, README, legacy specs                  |
+| Move seed                                     | `seed-demo-content.ts` → `lokumu-api/prisma/seed/cultural-corpus.ts`      |
+| Add `data/cultural/`                          | User content import via `lokumu-api/scripts/ingest-cultural.ts`           |
+| Delete `lokumu-agent/src/runtime/Untitled`    | Orphan file                                                               |
+| One lockfile per package                      | `bun.lock` OR `package-lock.json` in `lokumu-api`, not both               |
+| Update `lokumu-agent/STRUCTURE.md`            | Reflect actual file tree                                                  |
+| Add `shared/i18n/languages.ts`                | Single source: `fra`, `eng`, `lin`, `kit`; web maps `fr`/`en` at boundary |
 
 **Not in scope:** root workspaces, extracting `lokumu-rag/` to separate repo.
 
@@ -120,20 +120,20 @@ JSON files in `data/cultural/`:
 
 **Target volume:** 30–50 entries
 
-| Language | Count | Priority types |
-|----------|-------|----------------|
-| `lin` | 12–15 | proverbs, greetings, common expressions |
-| `kit` | 12–15 | same |
-| `fra` | 5–8 | translations + DRC cultural context |
-| `eng` | 3–5 | translations for international investors |
+| Language | Count | Priority types                           |
+| -------- | ----- | ---------------------------------------- |
+| `lin`    | 12–15 | proverbs, greetings, common expressions  |
+| `kit`    | 12–15 | same                                     |
+| `fra`    | 5–8   | translations + DRC cultural context      |
+| `eng`    | 3–5   | translations for international investors |
 
 User content goes in `data/cultural/`. Seed script fills gaps with validated content (replace current low-quality Kituba placeholder in seed).
 
 ### 2.2 Ingestion paths
 
-| Path | Command | Use |
-|------|---------|-----|
-| Seed | `cd lokumu-api && npm run seed` | Guaranteed demo baseline |
+| Path   | Command                                        | Use                                 |
+| ------ | ---------------------------------------------- | ----------------------------------- |
+| Seed   | `cd lokumu-api && npm run seed`                | Guaranteed demo baseline            |
 | Import | `npm run ingest:cultural -- ../data/cultural/` | User `.json` / `.md` / `.txt` files |
 
 Chunking: paragraph split, ~256 token max. One JSON entry = one document. Metadata in `Chunk.metadata`: `{ type, tags, translation_fr, source }`.
@@ -163,11 +163,11 @@ Minimum score threshold: `0.5`. Below threshold: free conversation without citat
 
 **c) RAG routing in `assistant/`**
 
-| Signal | Action |
-|--------|--------|
-| Cultural keywords (`proverbe`, `ndakisa`, `salut`, `tradition`, `comment dit-on`, etc.) | Force RAG |
-| Simple greeting (`mbote`, `bonjour`) | Optional RAG (greeting chunks) |
-| General non-cultural question | No RAG, system prompt only |
+| Signal                                                                                  | Action                         |
+| --------------------------------------------------------------------------------------- | ------------------------------ |
+| Cultural keywords (`proverbe`, `ndakisa`, `salut`, `tradition`, `comment dit-on`, etc.) | Force RAG                      |
+| Simple greeting (`mbote`, `bonjour`)                                                    | Optional RAG (greeting chunks) |
+| General non-cultural question                                                           | No RAG, system prompt only     |
 
 ### 2.4 Prompts
 
@@ -200,12 +200,12 @@ Réponds en {language}. Cite les sources du contexte quand pertinent.
 
 ### 2.5 Language codes
 
-| Internal (API/DB) | UI (web) | Display |
-|-------------------|----------|---------|
-| `fra` | `fr` | Français |
-| `eng` | `en` | English |
-| `lin` | `lin` | Lingála |
-| `kit` | `kit` | Kitúba |
+| Internal (API/DB) | UI (web) | Display  |
+| ----------------- | -------- | -------- |
+| `fra`             | `fr`     | Français |
+| `eng`             | `en`     | English  |
+| `lin`             | `lin`    | Lingála  |
+| `kit`             | `kit`    | Kitúba   |
 
 Centralized in `shared/i18n/languages.ts`.
 
@@ -213,27 +213,27 @@ Centralized in `shared/i18n/languages.ts`.
 
 Replace llama.cpp CLI with Ollama HTTP client for demo simplicity.
 
-| Parameter | Value |
-|-----------|--------|
-| Base URL | `http://localhost:11434` |
-| Endpoint | `POST /api/chat` |
-| Primary model | `qwen3.5` |
-| Fallback | `deepseek-coder` |
-| Temperature (chat) | `0.7` |
-| Stream | `true` (native WebSocket) |
+| Parameter          | Value                     |
+| ------------------ | ------------------------- |
+| Base URL           | `http://localhost:11434`  |
+| Endpoint           | `POST /api/chat`          |
+| Primary model      | `qwen3.5`                 |
+| Fallback           | `deepseek-coder`          |
+| Temperature (chat) | `0.7`                     |
+| Stream             | `true` (native WebSocket) |
 
 `llama.cpp` remains available via env for future use.
 
 ### 2.7 Realistic quality expectations
 
-| Capability | Demo expectation | Mechanism |
-|------------|------------------|-----------|
-| Corpus proverbs/expressions | Reliable | RAG + citation |
-| Common greetings | Good | RAG + prompt |
-| Free LIN/KIT conversation | Variable (model limits) | Prompt + UI disclaimer |
-| FR ↔ LIN/KIT translation (known content) | Good | RAG |
+| Capability                               | Demo expectation        | Mechanism              |
+| ---------------------------------------- | ----------------------- | ---------------------- |
+| Corpus proverbs/expressions              | Reliable                | RAG + citation         |
+| Common greetings                         | Good                    | RAG + prompt           |
+| Free LIN/KIT conversation                | Variable (model limits) | Prompt + UI disclaimer |
+| FR ↔ LIN/KIT translation (known content) | Good                    | RAG                    |
 
-UI disclaimer: *« Réponses culturelles ancrées dans le corpus local. Conversation libre en cours d'enrichissement communautaire. »*
+UI disclaimer: _« Réponses culturelles ancrées dans le corpus local. Conversation libre en cours d'enrichissement communautaire. »_
 
 ---
 
@@ -274,13 +274,13 @@ No required User link for demo (guest mode).
 
 ### 3.3 API — `community/` module
 
-| Endpoint | Method | Role |
-|----------|--------|------|
-| `/community/contributions` | POST | Submit correction |
-| `/community/contributions` | GET | List (filter status, language) |
-| `/community/contributions/:id/approve` | PATCH | Validate → trigger RAG ingest |
-| `/community/contributions/:id/reject` | PATCH | Reject with optional reason |
-| `/community/stats` | GET | Demo metrics counter |
+| Endpoint                               | Method | Role                           |
+| -------------------------------------- | ------ | ------------------------------ |
+| `/community/contributions`             | POST   | Submit correction              |
+| `/community/contributions`             | GET    | List (filter status, language) |
+| `/community/contributions/:id/approve` | PATCH  | Validate → trigger RAG ingest  |
+| `/community/contributions/:id/reject`  | PATCH  | Reject with optional reason    |
+| `/community/stats`                     | GET    | Demo metrics counter           |
 
 POST payload:
 
@@ -298,9 +298,9 @@ POST payload:
 
 ### 3.4 Validation modes
 
-| Mode | Env | Behavior |
-|------|-----|----------|
-| Live demo | `COMMUNITY_AUTO_APPROVE=true` | Immediate ingest |
+| Mode       | Env                            | Behavior                    |
+| ---------- | ------------------------------ | --------------------------- |
+| Live demo  | `COMMUNITY_AUTO_APPROVE=true`  | Immediate ingest            |
 | Production | `COMMUNITY_AUTO_APPROVE=false` | Manual review before ingest |
 
 On approval:
@@ -311,21 +311,21 @@ On approval:
 
 ### 3.5 WebSocket events
 
-| Event | Direction | Purpose |
-|-------|-----------|---------|
-| `contribution:submit` | client → server | Submit correction |
+| Event                 | Direction       | Purpose                   |
+| --------------------- | --------------- | ------------------------- |
+| `contribution:submit` | client → server | Submit correction         |
 | `contribution:status` | server → client | `{ id, status, message }` |
 
 Community chunks get +0.1 score bonus (configurable, can disable).
 
 ### 3.6 Safeguards
 
-| Risk | Mitigation |
-|------|------------|
-| Spam | Rate limit: 5 contributions / session / hour |
-| Duplicates | Hash `(originalQuery + language)`; merge if existing score > 0.9 |
-| Polluted corpus | `rejected` status; purge by `source: community://` |
-| False confidence | UI badge "Enrichi par la communauté" on community citations |
+| Risk             | Mitigation                                                       |
+| ---------------- | ---------------------------------------------------------------- |
+| Spam             | Rate limit: 5 contributions / session / hour                     |
+| Duplicates       | Hash `(originalQuery + language)`; merge if existing score > 0.9 |
+| Polluted corpus  | `rejected` status; purge by `source: community://`               |
+| False confidence | UI badge "Enrichi par la communauté" on community citations      |
 
 ---
 
@@ -337,12 +337,12 @@ Replace inline-style chat prototype with investor-ready demo UI. No auth require
 
 ### 4.2 Stack
 
-| Choice | Decision |
-|--------|----------|
-| Styling | Tailwind CSS (added to `lokumu-web` only) |
-| UI i18n | i18next (already installed) for interface labels |
-| Auth routes | Kept but not linked from demo chat |
-| Code mode | Hidden; `assistant/` forces chat mode |
+| Choice      | Decision                                         |
+| ----------- | ------------------------------------------------ |
+| Styling     | Tailwind CSS (added to `lokumu-web` only)        |
+| UI i18n     | i18next (already installed) for interface labels |
+| Auth routes | Kept but not linked from demo chat               |
+| Code mode   | Hidden; `assistant/` forces chat mode            |
 
 ### 4.3 File structure
 
@@ -375,13 +375,13 @@ lokumu-web/src/
 
 ### 4.4 Visual identity
 
-| Token | Value | Usage |
-|-------|--------|-------|
-| Primary | `#007FFF` | Buttons, accents |
-| Accent | `#F7D618` | Offline badge |
-| Red | `#CE1126` | Errors |
-| Background | `#FAFAFA` | Page |
-| Surface | `#FFFFFF` | Cards, bubbles |
+| Token      | Value     | Usage            |
+| ---------- | --------- | ---------------- |
+| Primary    | `#007FFF` | Buttons, accents |
+| Accent     | `#F7D618` | Offline badge    |
+| Red        | `#CE1126` | Errors           |
+| Background | `#FAFAFA` | Page             |
+| Surface    | `#FFFFFF` | Cards, bubbles   |
 
 ### 4.5 Key UI features
 
@@ -417,41 +417,41 @@ lokumu-web/src/
 
 ### 5.1 Pre-demo checklist
 
-| Step | Verification |
-|------|--------------|
-| PostgreSQL running | `psql` connects |
-| Ollama running | `qwen3.5` in `curl localhost:11434/api/tags` |
-| Migrate + seed | ~30–50 chunks in DB |
-| Import user content | `npm run ingest:cultural` logs OK |
-| API | `GET /health` → 200 |
-| Web | Offline badge green |
-| BGE-M3 cached | Model in `~/.cache/huggingface/` for strict offline |
+| Step                | Verification                                        |
+| ------------------- | --------------------------------------------------- |
+| PostgreSQL running  | `psql` connects                                     |
+| Ollama running      | `qwen3.5` in `curl localhost:11434/api/tags`        |
+| Migrate + seed      | ~30–50 chunks in DB                                 |
+| Import user content | `npm run ingest:cultural` logs OK                   |
+| API                 | `GET /health` → 200                                 |
+| Web                 | Offline badge green                                 |
+| BGE-M3 cached       | Model in `~/.cache/huggingface/` for strict offline |
 
 ### 5.2 Investor demo script (~8 min)
 
-| Min | Action | Key message |
-|-----|--------|-------------|
-| 0–1 | Open `/chat`, show offline badge + languages | 100% local, data never leaves machine |
-| 1–2 | Chip "Proverbe lingala" → response + citation | Grounded in Congolese cultural corpus |
-| 2–3 | Switch to Kituba, greeting question | Four languages, one AI |
-| 3–4 | French cultural question | FR ↔ local language bridge |
-| 4–6 | Correct a response → re-ask same question | Community enriches AI without cloud |
-| 6–7 | Show CommunityStats | Participatory learning, data sovereignty |
-| 7–8 | Short free Lingala chat | Continuous enrichment vision |
+| Min | Action                                        | Key message                              |
+| --- | --------------------------------------------- | ---------------------------------------- |
+| 0–1 | Open `/chat`, show offline badge + languages  | 100% local, data never leaves machine    |
+| 1–2 | Chip "Proverbe lingala" → response + citation | Grounded in Congolese cultural corpus    |
+| 2–3 | Switch to Kituba, greeting question           | Four languages, one AI                   |
+| 3–4 | French cultural question                      | FR ↔ local language bridge               |
+| 4–6 | Correct a response → re-ask same question     | Community enriches AI without cloud      |
+| 6–7 | Show CommunityStats                           | Participatory learning, data sovereignty |
+| 7–8 | Short free Lingala chat                       | Continuous enrichment vision             |
 
 **Plan B:** If free LIN/KIT is weak, stay on suggested chips and correction flow.
 
 ### 5.3 Error handling
 
-| Scenario | API | UI |
-|----------|-----|-----|
-| Ollama down | `503 ollama_unavailable` | Red badge + instructions |
-| Model missing | fallback `deepseek-coder`; else error | Toast with model name |
-| PostgreSQL down | `503 database_unavailable` | Error message |
-| BGE-M3 not loaded | hash fallback + warning log | Orange banner: degraded search |
-| Empty RAG | chat without context | Disclaimer visible |
-| Ollama timeout (>30s) | abort | "Réponse trop longue" |
-| Contribution spam | `429` | Rate limit message |
+| Scenario              | API                                   | UI                             |
+| --------------------- | ------------------------------------- | ------------------------------ |
+| Ollama down           | `503 ollama_unavailable`              | Red badge + instructions       |
+| Model missing         | fallback `deepseek-coder`; else error | Toast with model name          |
+| PostgreSQL down       | `503 database_unavailable`            | Error message                  |
+| BGE-M3 not loaded     | hash fallback + warning log           | Orange banner: degraded search |
+| Empty RAG             | chat without context                  | Disclaimer visible             |
+| Ollama timeout (>30s) | abort                                 | "Réponse trop longue"          |
+| Contribution spam     | `429`                                 | Rate limit message             |
 
 **Health endpoint** (`GET /health`):
 
@@ -476,24 +476,24 @@ OLLAMA_MODEL=qwen3.5
 OLLAMA_FALLBACK_MODEL=deepseek-coder
 COMMUNITY_AUTO_APPROVE=true
 EMBEDDING_MODEL=Xenova/bge-m3
-PORT=3001
+PORT=7001
 ```
 
 **`lokumu-web/.env.local`**
 
 ```env
-NEXT_PUBLIC_API_URL=http://localhost:3001
-NEXT_PUBLIC_WS_URL=http://localhost:3001
+NEXT_PUBLIC_API_URL=http://localhost:7001
+NEXT_PUBLIC_WS_URL=http://localhost:7001
 ```
 
 ### 5.5 Minimal tests
 
-| Level | Target |
-|-------|--------|
-| Unit | `languages.ts`, multilingual prompts, cultural keyword routing |
-| Integration | ingest → search with score > threshold |
-| Integration | contribution → approve → chunk retrievable |
-| Manual E2E | Section 5.2 script on offline machine |
+| Level       | Target                                                         |
+| ----------- | -------------------------------------------------------------- |
+| Unit        | `languages.ts`, multilingual prompts, cultural keyword routing |
+| Integration | ingest → search with score > threshold                         |
+| Integration | contribution → approve → chunk retrievable                     |
+| Manual E2E  | Section 5.2 script on offline machine                          |
 
 ### 5.6 Definition of Done
 
@@ -517,11 +517,11 @@ NEXT_PUBLIC_WS_URL=http://localhost:3001
 
 ## Appendix: Naming conventions
 
-| Layer | Convention | Example |
-|-------|------------|---------|
-| Packages | `lokumu-{role}` | `lokumu-api`, `lokumu-web` |
-| NestJS modules | lowercase domain | `assistant/`, `community/` |
-| Language codes (internal) | ISO 639-3 | `fra`, `eng`, `lin`, `kit` |
-| Language codes (UI) | Short codes | `fr`, `en`, `lin`, `kit` |
-| Community sources | URI scheme | `community://{contributionId}` |
-| Cultural data | `data/cultural/` | JSON, MD, TXT |
+| Layer                     | Convention       | Example                        |
+| ------------------------- | ---------------- | ------------------------------ |
+| Packages                  | `lokumu-{role}`  | `lokumu-api`, `lokumu-web`     |
+| NestJS modules            | lowercase domain | `assistant/`, `community/`     |
+| Language codes (internal) | ISO 639-3        | `fra`, `eng`, `lin`, `kit`     |
+| Language codes (UI)       | Short codes      | `fr`, `en`, `lin`, `kit`       |
+| Community sources         | URI scheme       | `community://{contributionId}` |
+| Cultural data             | `data/cultural/` | JSON, MD, TXT                  |

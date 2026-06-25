@@ -1,4 +1,12 @@
-import { Controller, Post, Body, Get, Query, HttpCode, HttpStatus } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Get,
+  Query,
+  HttpCode,
+  HttpStatus,
+} from '@nestjs/common';
 import { ModelService } from './model.service';
 
 @Controller('model')
@@ -15,7 +23,7 @@ export class ModelController {
 
   @Post('generate')
   async generate(
-    @Body() body: { prompt: string; temperature?: number; model?: string }
+    @Body() body: { prompt: string; temperature?: number; model?: string },
   ) {
     const { prompt, temperature, model } = body;
     return this.modelService.generate(prompt, { temperature, model });

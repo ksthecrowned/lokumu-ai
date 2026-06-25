@@ -11,7 +11,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
       clientSecret: process.env.GOOGLE_CLIENT_SECRET || 'dummy',
       callbackURL: process.env.GOOGLE_CALLBACK_URL || '/auth/google/callback',
       scope: ['email', 'profile'],
-    } as any);
+    });
   }
 
   async validate(
@@ -26,7 +26,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
       firstName: name?.givenName,
       lastName: name?.familyName,
     });
-    
+
     done(null, user);
   }
 }

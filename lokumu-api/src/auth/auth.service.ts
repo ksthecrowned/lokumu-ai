@@ -10,9 +10,17 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async register(dto: { email: string; password: string; firstName?: string; lastName?: string; language?: string }) {
+  async register(dto: {
+    email: string;
+    password: string;
+    firstName?: string;
+    lastName?: string;
+    language?: string;
+  }) {
     const { email, password, firstName, lastName, language = 'fr' } = dto;
-    const existingUser = await this.prisma.user.findUnique({ where: { email } });
+    const existingUser = await this.prisma.user.findUnique({
+      where: { email },
+    });
     if (existingUser) {
       throw new Error('User already exists');
     }
@@ -46,10 +54,14 @@ export class AuthService {
     return this.generateTokens(user);
   }
 
-  async googleLogin(profile: { email: string; firstName?: string; lastName?: string }) {
+  async googleLogin(profile: {
+    email: string;
+    firstName?: string;
+    lastName?: string;
+  }) {
     const { email, firstName, lastName } = profile;
     let user = await this.prisma.user.findUnique({ where: { email } });
-    
+
     if (!user) {
       user = await this.prisma.user.create({
         data: {
@@ -61,14 +73,20 @@ export class AuthService {
         },
       });
     }
-    
+
     return this.generateTokens(user);
   }
 
-  private async generateTokens(user: { id: string; email: string; firstName?: string | null; lastName?: string | null; language: string }) {
+  private async generateTokens(user: {
+    id: string;
+    email: string;
+    firstName?: string | null;
+    lastName?: string | null;
+    language: string;
+  }) {
     const payload = { sub: user.id, email: user.email, role: 'user' };
     const accessToken = this.jwtService.sign(payload);
-    
+
     const session = await this.prisma.session.create({
       data: {
         userId: user.id,
@@ -76,7 +94,7 @@ export class AuthService {
         expiresAt: new Date(Date.now() + 15 * 60 * 1000),
       },
     });
-    
+
     return {
       accessToken,
       user: {

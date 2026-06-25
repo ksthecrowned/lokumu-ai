@@ -12,7 +12,7 @@ export type CommunityStats = {
   pending: number;
 };
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001';
+const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:7001';
 
 async function parseJson<T>(response: Response): Promise<T> {
   if (!response.ok) {

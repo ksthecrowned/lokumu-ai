@@ -30,7 +30,7 @@ API_PID=$!
 (cd "${ROOT_DIR}/lokumu-web" && npm run dev) &
 WEB_PID=$!
 
-echo "API running on http://localhost:3001 (pid: ${API_PID})"
-echo "Web running on http://localhost:3000/chat (pid: ${WEB_PID})"
+echo "API running on http://localhost:7001 (pid: ${API_PID})"
+echo "Web running on http://localhost:7000/chat (pid: ${WEB_PID})"
 
 wait

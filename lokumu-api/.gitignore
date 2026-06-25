@@ -21,10 +21,6 @@ build/
 logs
 *.log
 
-# Prisma migrations (keep migrations folder but ignore generated SQL?)
-prisma/migrations/*
-!prisma/migrations/README.md
-
 # Ollama data (if mounted)
 ollama/
 

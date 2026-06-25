@@ -36,5 +36,15 @@ export function buildRagPrompt(
   const contextBlock = context
     ? `[CONTEXTE CULTUREL]\n${context}\n[/CONTEXTE CULTUREL]\n\n`
     : '';
-  return `${contextBlock}Historique:\n${history}\n\nQuestion: ${userMessage}\n\nRéponds en ${lang}. Cite les sources du contexte quand pertinent.`;
+  const rules = context
+    ? `Règles strictes :
+- Utilise UNIQUEMENT le contexte culturel ci-dessus
+- Cite le texte exact du corpus, surtout pour les proverbes
+- N'invente jamais de proverbe, d'expression ou de traduction
+- Si le contexte ne suffit pas, dis-le clairement
+
+`
+    : '';
+
+  return `${contextBlock}${rules}Historique:\n${history}\n\nQuestion: ${userMessage}\n\nRéponds en ${lang}. Cite les sources du contexte quand pertinent.`;
 }

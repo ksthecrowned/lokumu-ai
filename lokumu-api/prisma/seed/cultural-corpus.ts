@@ -115,7 +115,7 @@ export const CULTURAL_ENTRIES: CulturalEntry[] = [
     language: 'lin',
     title: 'Un seul doigt ne tue pas un pou',
     content: 'Mosapi moko ekokanga te nse.',
-    translation_fr: "Un seul doigt ne peut pas ecraser un pou.",
+    translation_fr: 'Un seul doigt ne peut pas ecraser un pou.',
     tags: ['proverbe', 'solidarite'],
     source: 'validated-corpus',
   },

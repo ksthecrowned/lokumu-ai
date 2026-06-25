@@ -8,14 +8,14 @@ export interface ModelConfig {
 
 export const MODEL_REGISTRY: Record<ModelType, ModelConfig> = {
   code: {
-    path: process.env.MODEL_DIR 
+    path: process.env.MODEL_DIR
       ? `${process.env.MODEL_DIR}/qwen2.5-coder-1.5b-q4_k_m.gguf`
       : './models/qwen2.5-coder-1.5b-q4_k_m.gguf',
     type: 'code',
     defaultName: 'qwen2.5-coder-1.5b-q4_k_m.gguf',
   },
   chat: {
-    path: process.env.MODEL_DIR 
+    path: process.env.MODEL_DIR
       ? `${process.env.MODEL_DIR}/phi-3-mini-4k-q4_k_m.gguf`
       : './models/phi-3-mini-4k-q4_k_m.gguf',
     type: 'chat',
