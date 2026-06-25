@@ -8,6 +8,7 @@ import { ModelModule } from './model/model.module';
 import { AssistantModule } from './assistant/assistant.module';
 import { ChatModule } from './chat/chat.module';
 import { CommunityModule } from './community/community.module';
+import { ConversationModule } from './conversation/conversation.module';
 import { HealthModule } from './health/health.module';
 
 @Module({
@@ -19,6 +20,7 @@ import { HealthModule } from './health/health.module';
     AssistantModule,
     ChatModule,
     CommunityModule,
+    ConversationModule,
     HealthModule,
   ],
   controllers: [AppController],
