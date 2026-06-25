@@ -66,7 +66,7 @@ model Document {
   id            String   @id @default(uuid())
   source        String   // URL, file path, etc.
   title         String?
-  language      String   // ISO 639-3: fra, lin, swa, etc.
+  language      String   // ISO 639-3: fra, lin, kit, eng
   content       String
   chunks        Chunk[]
   createdAt     DateTime @default(now())
@@ -81,10 +81,29 @@ model Chunk {
   content        String
   language       String   // ISO 639-3: fra, lin, swa, etc.
   tokenCount     Int
-  embedding      Bytes    // PostgreSQL vector stored as raw bytes; use raw SQL for similarity search
+  embedding      Bytes    // legacy bytea; embedding_vec used for pgvector search
   metadata       Json     // { page: int, section: string, etc. }
   document       Document @relation(fields: [documentId], references: [id])
 
   @@index([language])
   @@index([documentId])
+}
+
+model CommunityContribution {
+  id              String    @id @default(uuid())
+  conversationId  String?
+  messageId       String?
+  language        String
+  originalQuery   String
+  originalAnswer  String
+  correctedAnswer String
+  contributorNote String?
+  status          String    @default("pending")
+  reviewedAt      DateTime?
+  ingestedAt      DateTime?
+  chunkId         String?
+  createdAt       DateTime  @default(now())
+
+  @@index([status, language])
+  @@index([createdAt])
 }
