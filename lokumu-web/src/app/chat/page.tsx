@@ -1,15 +1,14 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ChatWindow } from "../../components/chat/ChatWindow";
 import { CorrectionForm } from "../../components/chat/CorrectionForm";
 import { SourceItem } from "../../components/chat/SourceCitation";
 import { SuggestedQuestions } from "../../components/chat/SuggestedQuestions";
 import { CommunityStats } from "../../components/demo/CommunityStats";
 import { DemoHeader } from "../../components/demo/DemoHeader";
-import { DisclaimerBanner } from "../../components/demo/DisclaimerBanner";
 import { OfflineBadge } from "../../components/demo/OfflineBadge";
-import { UiLanguage, UI_LANGUAGES } from "../../lib/languages";
+import { UiLanguage } from "../../lib/languages";
 import { getSocket } from "../../lib/socket";
 
 type MessageState = {
@@ -31,7 +30,7 @@ type StreamPayload = {
   conversationId?: string;
 };
 
-const DEFAULT_LANGUAGE = UI_LANGUAGES[0]?.code ?? "fr";
+const DEFAULT_LANGUAGE = "fr" as UiLanguage;
 
 function toInternalLanguage(language: UiLanguage): "fra" | "eng" | "lin" | "kit" {
   if (language === "fr") return "fra";
@@ -48,46 +47,76 @@ export default function ChatPage() {
   const socketRef = useRef(getSocket());
   const activeAssistantId = useRef<string | null>(null);
   const latestUserPrompt = useRef<string>("");
+  const conversationIdRef = useRef<string | null>(null);
+  const streamTimeoutRef = useRef<number | null>(null);
 
-  function submitContribution(
-    assistantMessage: MessageState,
-    correctedAnswer: string,
-    contributorNote?: string,
-  ) {
-    const originalQuery = assistantMessage.originalQuery ?? latestUserPrompt.current;
-    socketRef.current.emit("contribution:submit", {
-      conversationId: assistantMessage.conversationId,
-      messageId: assistantMessage.messageId,
-      language: toInternalLanguage(language),
-      originalQuery,
-      originalAnswer: assistantMessage.content,
-      correctedAnswer,
-      contributorNote,
-    });
-    setNotice("Correction envoyee. Merci.");
-  }
+  const clearStreamTimeout = useCallback(() => {
+    if (streamTimeoutRef.current !== null) {
+      window.clearTimeout(streamTimeoutRef.current);
+      streamTimeoutRef.current = null;
+    }
+  }, []);
+
+  const submitContribution = useCallback(
+    (
+      assistantMessage: MessageState,
+      correctedAnswer: string,
+      contributorNote?: string,
+    ) => {
+      const originalQuery =
+        assistantMessage.originalQuery ?? latestUserPrompt.current;
+      socketRef.current.emit("contribution:submit", {
+        conversationId: assistantMessage.conversationId,
+        messageId: assistantMessage.messageId,
+        language: toInternalLanguage(language),
+        originalQuery,
+        originalAnswer: assistantMessage.content,
+        correctedAnswer,
+        contributorNote,
+      });
+      setNotice("Merci — votre correction enrichit Lokumu.");
+    },
+    [language],
+  );
 
   useEffect(() => {
     const socket = socketRef.current;
 
     const onStream = (payload: StreamPayload) => {
-      if (!activeAssistantId.current) return;
+      if (payload.conversationId) {
+        conversationIdRef.current = payload.conversationId;
+      }
 
-      setMessages((current) =>
-        current.map((message) =>
-          message.id !== activeAssistantId.current
+      setMessages((current) => {
+        const targetId =
+          activeAssistantId.current ??
+          [...current]
+            .reverse()
+            .find((message) => message.role === "assistant")?.id;
+
+        if (!targetId) return current;
+
+        return current.map((message) =>
+          message.id !== targetId
             ? message
             : {
                 ...message,
-                content: `${message.content}${payload.chunk}`,
-                sources: payload.sources,
+                content: payload.chunk
+                  ? message.content
+                    ? `${message.content}${payload.chunk}`
+                    : payload.chunk
+                  : message.content,
+                sources:
+                  payload.sources.length > 0 ? payload.sources : message.sources,
                 messageId: payload.messageId ?? message.messageId,
-                conversationId: payload.conversationId ?? message.conversationId,
+                conversationId:
+                  payload.conversationId ?? message.conversationId,
               },
-        ),
-      );
+        );
+      });
 
       if (payload.done) {
+        clearStreamTimeout();
         setIsStreaming(false);
         activeAssistantId.current = null;
       }
@@ -95,11 +124,15 @@ export default function ChatPage() {
 
     const onContributionStatus = (payload: { status: string }) => {
       if (payload.status === "approved") {
-        setNotice("Correction approuvee et ajoutee au corpus.");
+        setNotice("Correction intégrée au corpus culturel.");
         return;
       }
+      setNotice("Correction enregistrée.");
+    };
 
-      setNotice("Correction recue. Validation en attente.");
+    const resetStreaming = () => {
+      clearStreamTimeout();
+      setIsStreaming(false);
     };
 
     socket.on("stream", onStream);
@@ -108,7 +141,77 @@ export default function ChatPage() {
       socket.off("stream", onStream);
       socket.off("contribution:status", onContributionStatus);
     };
-  }, []);
+  }, [clearStreamTimeout]);
+
+  const sendPrompt = useCallback(
+    (text?: string) => {
+      const nextPrompt = (text ?? prompt).trim();
+      if (isStreaming || !nextPrompt) return;
+
+      latestUserPrompt.current = nextPrompt;
+      setPrompt("");
+
+      const userId = crypto.randomUUID();
+      const assistantId = crypto.randomUUID();
+      activeAssistantId.current = assistantId;
+      setIsStreaming(true);
+      setNotice(null);
+
+      setMessages((current) => [
+        ...current,
+        { id: userId, role: "user", content: nextPrompt },
+        {
+          id: assistantId,
+          role: "assistant",
+          content: "",
+          originalQuery: nextPrompt,
+        },
+      ]);
+
+      clearStreamTimeout();
+      streamTimeoutRef.current = window.setTimeout(() => {
+        setIsStreaming(false);
+        setMessages((current) => {
+          const targetId =
+            activeAssistantId.current ??
+            [...current]
+              .reverse()
+              .find((message) => message.role === "assistant" && !message.content.trim())
+              ?.id;
+
+          if (!targetId) return current;
+
+          return current.map((message) =>
+            message.id === targetId && !message.content.trim()
+              ? {
+                  ...message,
+                  content:
+                    "Pas de reponse du serveur. Verifiez que l'API tourne (port 7001) et rechargez la page.",
+                }
+              : message,
+          );
+        });
+        activeAssistantId.current = null;
+        streamTimeoutRef.current = null;
+      }, 30_000);
+
+      const emitMessage = () => {
+        socketRef.current.emit("message", {
+          prompt: nextPrompt,
+          language: toInternalLanguage(language),
+          conversationId: conversationIdRef.current ?? undefined,
+        });
+      };
+
+      if (socketRef.current.connected) {
+        emitMessage();
+      } else {
+        socketRef.current.once("connect", emitMessage);
+        socketRef.current.connect();
+      }
+    },
+    [clearStreamTimeout, isStreaming, language, prompt],
+  );
 
   const chatMessages = useMemo(
     () =>
@@ -118,87 +221,91 @@ export default function ChatPage() {
           message.role === "assistant" && message.content.trim() ? (
             <CorrectionForm
               onSubmit={async ({ correctedAnswer, contributorNote }) => {
-                await submitContribution(message, correctedAnswer, contributorNote);
+                submitContribution(message, correctedAnswer, contributorNote);
               }}
             />
           ) : undefined,
       })),
-    [messages],
+    [messages, submitContribution],
   );
 
-  const sendPrompt = () => {
-    if (isStreaming) return;
-    if (!prompt.trim()) return;
-
-    const nextPrompt = prompt.trim();
-    latestUserPrompt.current = nextPrompt;
-    setPrompt("");
-
-    const userId = crypto.randomUUID();
-    const assistantId = crypto.randomUUID();
-    activeAssistantId.current = assistantId;
-    setIsStreaming(true);
-    setNotice(null);
-
-    setMessages((current) => [
-      ...current,
-      { id: userId, role: "user", content: nextPrompt },
-      {
-        id: assistantId,
-        role: "assistant",
-        content: "",
-        originalQuery: nextPrompt,
-      },
-    ]);
-
-    socketRef.current.emit("message", { prompt: nextPrompt, language });
-  };
+  const showWelcome = messages.length === 0 && !isStreaming;
+  const showChat = messages.length > 0 || isStreaming;
 
   return (
-    <main className="mx-auto flex w-full max-w-5xl flex-col gap-4 px-4 py-6">
-      <DemoHeader language={language} onLanguageChange={setLanguage} />
+    <main className="mx-auto flex h-[100dvh] max-w-3xl flex-col bg-slate-50">
+      <header className="shrink-0 border-b border-slate-200 bg-white px-4 py-3">
+        <div className="flex items-center justify-between gap-3">
+          <DemoHeader language={language} onLanguageChange={setLanguage} />
+          <OfflineBadge />
+        </div>
+      </header>
 
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <OfflineBadge />
-        <CommunityStats />
+      <div className="lokumu-scrollbar min-h-0 flex-1 overflow-y-auto px-4 py-4">
+        {showWelcome ? (
+          <div className="mx-auto max-w-lg space-y-4 pt-8 text-center">
+            <p className="text-2xl font-semibold text-slate-900">Mbote 👋</p>
+            <p className="text-sm text-slate-600">
+              Posez une question en français, anglais, lingala ou kituba.
+              Réponses générées <strong>100 % en local</strong>.
+            </p>
+            <SuggestedQuestions
+              language={language}
+              disabled={isStreaming}
+              onSelect={(question) => sendPrompt(question)}
+            />
+          </div>
+        ) : null}
+        {showChat ? (
+          <ChatWindow messages={chatMessages} isTyping={isStreaming} />
+        ) : null}
       </div>
 
-      <DisclaimerBanner />
-
-      <section className="space-y-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-soft">
-        <SuggestedQuestions language={language} onSelect={setPrompt} />
-
-        <ChatWindow messages={chatMessages} isTyping={isStreaming} />
-
-        <div className="space-y-2">
-          <textarea
-            value={prompt}
-            onChange={(event) => setPrompt(event.target.value)}
-            placeholder="Posez une question culturelle..."
-            rows={4}
-            className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none ring-lokumu-primary transition focus:ring-2"
-          />
-          <div className="flex items-center justify-between">
-            <p className="text-xs text-slate-500">
-              Langues supportees: {UI_LANGUAGES.map((item) => item.code).join(", ")}
-            </p>
-            <button
-              type="button"
-              onClick={sendPrompt}
-              disabled={isStreaming || !prompt.trim()}
-              className="rounded-lg bg-lokumu-primary px-4 py-2 text-sm font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              {isStreaming ? "Generation..." : "Envoyer"}
-            </button>
-          </div>
-        </div>
-      </section>
-
       {notice ? (
-        <div className="rounded-lg border border-emerald-300 bg-emerald-50 px-3 py-2 text-sm text-emerald-700">
+        <div className="mx-4 mb-2 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
           {notice}
         </div>
       ) : null}
+
+      <footer className="shrink-0 border-t border-slate-200 bg-white px-4 py-3">
+        {!showWelcome ? (
+          <div className="mb-2">
+            <SuggestedQuestions
+              language={language}
+              disabled={isStreaming}
+              onSelect={(question) => sendPrompt(question)}
+            />
+          </div>
+        ) : null}
+        <div className="flex gap-2">
+          <input
+            type="text"
+            value={prompt}
+            onChange={(e) => setPrompt(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                sendPrompt();
+              }
+            }}
+            placeholder="Votre question…"
+            disabled={isStreaming}
+            className="min-w-0 flex-1 rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none ring-lokumu-primary focus:ring-2 disabled:opacity-60"
+          />
+          <button
+            type="button"
+            onClick={() => sendPrompt()}
+            disabled={isStreaming || !prompt.trim()}
+            className="shrink-0 rounded-xl bg-lokumu-primary px-5 py-3 text-sm font-semibold text-white disabled:opacity-50"
+          >
+            {isStreaming ? "…" : "Envoyer"}
+          </button>
+        </div>
+        <div className="mt-2 flex items-center justify-between text-xs text-slate-400">
+          <CommunityStats />
+          <span>Entrée pour envoyer</span>
+        </div>
+      </footer>
     </main>
   );
 }

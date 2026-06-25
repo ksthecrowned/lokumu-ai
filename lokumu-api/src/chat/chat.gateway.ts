@@ -30,12 +30,13 @@ export class ChatGateway {
   @SubscribeMessage('message')
   async handleMessage(
     @ConnectedSocket() client: Socket,
-    @MessageBody() data: { prompt: string; language?: string },
+    @MessageBody() data: { prompt: string; language?: string; conversationId?: string },
   ) {
     try {
       const result = await this.assistantService.processRequest(
         data.prompt,
         data.language,
+        data.conversationId,
       );
 
       const response = result.response;
