@@ -8,6 +8,7 @@ import { SuggestedQuestions } from "../../components/chat/SuggestedQuestions";
 import { CommunityStats } from "../../components/demo/CommunityStats";
 import { DemoHeader } from "../../components/demo/DemoHeader";
 import { OfflineBadge } from "../../components/demo/OfflineBadge";
+import { SaveForTrainingButton } from "../../components/train/SaveForTrainingButton";
 import { UiLanguage } from "../../lib/languages";
 import { getSocket } from "../../lib/socket";
 
@@ -257,7 +258,10 @@ export default function ChatPage() {
           </div>
         ) : null}
         {showChat ? (
-          <ChatWindow messages={chatMessages} isTyping={isStreaming} />
+          <>
+            <ChatWindow messages={chatMessages} isTyping={isStreaming} />
+            <SaveForTrainingButton messages={messages} language={language} />
+          </>
         ) : null}
       </div>
 

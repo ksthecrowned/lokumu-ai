@@ -17,8 +17,16 @@ export type TrainingDialoguePayload = {
   tags: string[];
 };
 
+export type TrainingDialogueInitial = {
+  title?: string;
+  language?: TrainingLanguage;
+  turns?: Array<{ role: TrainingRole; content: string }>;
+  tags?: string[];
+};
+
 type TrainingDialogueFormProps = {
   onSubmit: (payload: TrainingDialoguePayload) => Promise<void> | void;
+  initial?: TrainingDialogueInitial;
 };
 
 const EMPTY_TURNS: TrainingTurn[] = [
@@ -26,11 +34,33 @@ const EMPTY_TURNS: TrainingTurn[] = [
   { role: "assistant", content: "" },
 ];
 
-export function TrainingDialogueForm({ onSubmit }: TrainingDialogueFormProps) {
-  const [title, setTitle] = useState("");
-  const [language, setLanguage] = useState<TrainingLanguage>("kit");
-  const [tagsInput, setTagsInput] = useState("");
-  const [turns, setTurns] = useState<TrainingTurn[]>(EMPTY_TURNS);
+function getInitialTurns(initial?: TrainingDialogueInitial): TrainingTurn[] {
+  const baseTurns = initial?.turns
+    ?.map((turn) => ({
+      role: turn.role,
+      content: turn.content,
+    }))
+    .filter((turn) => turn.content.trim().length > 0);
+
+  if (!baseTurns || baseTurns.length < 2) {
+    return [...EMPTY_TURNS];
+  }
+
+  return baseTurns;
+}
+
+function getInitialTagsInput(initial?: TrainingDialogueInitial): string {
+  if (!initial?.tags || initial.tags.length === 0) {
+    return "";
+  }
+  return initial.tags.join(", ");
+}
+
+export function TrainingDialogueForm({ onSubmit, initial }: TrainingDialogueFormProps) {
+  const [title, setTitle] = useState(initial?.title ?? "");
+  const [language, setLanguage] = useState<TrainingLanguage>(initial?.language ?? "kit");
+  const [tagsInput, setTagsInput] = useState(getInitialTagsInput(initial));
+  const [turns, setTurns] = useState<TrainingTurn[]>(getInitialTurns(initial));
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
 
@@ -100,9 +130,10 @@ export function TrainingDialogueForm({ onSubmit }: TrainingDialogueFormProps) {
         tags: tagsPreview,
       });
 
-      setTitle("");
-      setTagsInput("");
-      setTurns(EMPTY_TURNS);
+      setTitle(initial?.title ?? "");
+      setLanguage(initial?.language ?? "kit");
+      setTagsInput(getInitialTagsInput(initial));
+      setTurns(getInitialTurns(initial));
     } finally {
       setIsSubmitting(false);
     }
