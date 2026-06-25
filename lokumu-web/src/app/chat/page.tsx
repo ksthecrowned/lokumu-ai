@@ -234,7 +234,7 @@ export default function ChatPage() {
   const showChat = messages.length > 0 || isStreaming;
 
   return (
-    <main className="mx-auto flex h-[100dvh] max-w-3xl flex-col bg-slate-50">
+    <main className="mx-auto flex h-dvh max-w-3xl flex-col bg-slate-50">
       <header className="shrink-0 border-b border-slate-200 bg-white px-4 py-3">
         <div className="flex items-center justify-between gap-3">
           <DemoHeader language={language} onLanguageChange={setLanguage} />
