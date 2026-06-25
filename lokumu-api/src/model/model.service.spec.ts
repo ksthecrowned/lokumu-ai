@@ -1,14 +1,82 @@
-import { detectMode } from '../assistant/mode-detector';
+import { ModelService } from './model.service';
+import { OllamaClient } from './ollama.client';
 
-describe('AssistantService - mode detection', () => {
-  // Tests focus on mode detection since full service requires DB/redis
-  it('should detect chat mode for questions', () => {
-    expect(detectMode('Quelle heure est-il?')).toBe('chat');
-    expect(detectMode('Comment ça va?')).toBe('chat');
+describe('ModelService', () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
   });
 
-  it('should detect code mode for technical prompts', () => {
-    expect(detectMode('Crée un endpoint API')).toBe('code');
-    expect(detectMode('Modifie le fichier .ts')).toBe('code');
+  it('falls back to smaller model when primary times out', async () => {
+    const timeoutError = new Error('timeout');
+    timeoutError.name = 'TimeoutError';
+    const chat = jest
+      .fn()
+      .mockRejectedValueOnce(timeoutError)
+      .mockResolvedValueOnce('Reponse fallback');
+    const hasModel = jest.fn().mockResolvedValue(true);
+
+    jest.spyOn(OllamaClient.prototype, 'chat').mockImplementation(chat);
+    jest.spyOn(OllamaClient.prototype, 'hasModel').mockImplementation(hasModel);
+
+    const service = new ModelService();
+    const response = await service.generate('Bonjour', {
+      model: 'qwen3:32b',
+      systemPrompt: 'Tu es Lokumu',
+    });
+
+    expect(response).toBe('Reponse fallback');
+    expect(chat).toHaveBeenCalledTimes(2);
+  });
+
+  it('chatWithHistory sends full message array to Ollama', async () => {
+    const hasModel = jest.fn().mockResolvedValue(true);
+    const chat = jest.fn().mockResolvedValue('Mbote!');
+
+    jest.spyOn(OllamaClient.prototype, 'hasModel').mockImplementation(hasModel);
+    jest.spyOn(OllamaClient.prototype, 'chat').mockImplementation(chat);
+
+    const service = new ModelService();
+    const messages = [
+      { role: 'system' as const, content: 'Tu es Lokumu' },
+      { role: 'user' as const, content: 'Mbote' },
+    ];
+
+    const result = await service.chatWithHistory(messages);
+
+    expect(result).toBe('Mbote!');
+    expect(chat).toHaveBeenCalledWith(
+      expect.any(String),
+      messages,
+      expect.objectContaining({ temperature: 0.7 }),
+    );
+  });
+
+  it('chatWithHistoryStream yields chunks from Ollama stream', async () => {
+    const hasModel = jest.fn().mockResolvedValue(true);
+    async function* fakeStream() {
+      yield 'Mbo';
+      yield 'te';
+    }
+    const chatStream = jest.fn().mockReturnValue(fakeStream());
+
+    jest.spyOn(OllamaClient.prototype, 'hasModel').mockImplementation(hasModel);
+    jest
+      .spyOn(OllamaClient.prototype, 'chatStream')
+      .mockImplementation(chatStream);
+
+    const service = new ModelService();
+    const messages = [{ role: 'user' as const, content: 'Mbote' }];
+
+    const chunks: string[] = [];
+    for await (const chunk of service.chatWithHistoryStream(messages)) {
+      chunks.push(chunk);
+    }
+
+    expect(chunks).toEqual(['Mbo', 'te']);
+    expect(chatStream).toHaveBeenCalledWith(
+      expect.any(String),
+      messages,
+      expect.objectContaining({ temperature: 0.7 }),
+    );
   });
 });
