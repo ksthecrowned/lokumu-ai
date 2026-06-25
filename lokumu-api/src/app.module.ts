@@ -5,11 +5,11 @@ import { AuthModule } from './auth/auth.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { RagModule } from './rag/rag.module';
 import { ModelModule } from './model/model.module';
-import { AgentModule } from './agent/agent.module';
+import { AssistantModule } from './assistant/assistant.module';
 import { ChatModule } from './chat/chat.module';
 
 @Module({
-  imports: [PrismaModule, AuthModule, RagModule, ModelModule, AgentModule, ChatModule],
+  imports: [PrismaModule, AuthModule, RagModule, ModelModule, AssistantModule, ChatModule],
   controllers: [AppController],
   providers: [AppService],
 })

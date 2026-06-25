@@ -1,14 +1,14 @@
 import { Module } from '@nestjs/common';
-import { AgentController } from './agent.controller';
-import { AgentService } from './agent.service';
+import { AssistantController } from './assistant.controller';
+import { AssistantService } from './assistant.service';
 import { AuthModule } from '../auth/auth.module';
 import { ModelModule } from '../model/model.module';
 import { RagModule } from '../rag/rag.module';
 
 @Module({
   imports: [AuthModule, ModelModule, RagModule],
-  controllers: [AgentController],
-  providers: [AgentService],
-  exports: [AgentService],
+  controllers: [AssistantController],
+  providers: [AssistantService],
+  exports: [AssistantService],
 })
-export class AgentModule {}
+export class AssistantModule {}

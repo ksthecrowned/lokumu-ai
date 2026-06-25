@@ -1,6 +1,6 @@
-import { detectMode } from '../agent/mode-detector';
+import { detectMode } from '../assistant/mode-detector';
 
-describe('AgentService - mode detection', () => {
+describe('AssistantService - mode detection', () => {
   // Tests focus on mode detection since full service requires DB/redis
   it('should detect chat mode for questions', () => {
     expect(detectMode('Quelle heure est-il?')).toBe('chat');

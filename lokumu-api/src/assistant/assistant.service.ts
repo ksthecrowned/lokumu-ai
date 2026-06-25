@@ -5,7 +5,7 @@ import { RagService } from '../rag/rag.service';
 import { getSystemPrompt, RAG_CONTEXT_TEMPLATE } from '../prompts/multilingual';
 
 @Injectable()
-export class AgentService {
+export class AssistantService {
   constructor(
     private modelService: ModelService,
     private ragService: RagService,

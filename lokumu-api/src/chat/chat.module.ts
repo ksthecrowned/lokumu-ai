@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { ChatGateway } from './chat.gateway';
-import { AgentModule } from '../agent/agent.module';
+import { AssistantModule } from '../assistant/assistant.module';
 
 @Module({
-  imports: [AgentModule],
+  imports: [AssistantModule],
   providers: [ChatGateway],
 })
 export class ChatModule {}

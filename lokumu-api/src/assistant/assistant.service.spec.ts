@@ -1,6 +1,6 @@
 import { detectMode } from './mode-detector';
 
-describe('AgentService - mode detection only', () => {
+describe('AssistantService - mode detection only', () => {
   // Basic test without full NestJS module setup
   it('should have access to mode detector', () => {
     expect(detectMode('test')).toBeDefined();

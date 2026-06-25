@@ -5,7 +5,7 @@ import {
   MessageBody,
 } from '@nestjs/websockets';
 import { Server } from 'socket.io';
-import { AgentService } from '../agent/agent.service';
+import { AssistantService } from '../assistant/assistant.service';
 
 @WebSocketGateway({
   cors: {
@@ -16,11 +16,11 @@ export class ChatGateway {
   @WebSocketServer()
   server: Server;
 
-  constructor(private agentService: AgentService) {}
+  constructor(private assistantService: AssistantService) {}
 
   @SubscribeMessage('message')
   async handleMessage(@MessageBody() data: { prompt: string; language?: string }) {
-    const result = await this.agentService.processRequest(data.prompt, data.language);
+    const result = await this.assistantService.processRequest(data.prompt, data.language);
     
     // Stream response character by character for typing effect
     const response = result.response;
