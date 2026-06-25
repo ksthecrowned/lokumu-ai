@@ -9,6 +9,8 @@ import { Server, Socket } from 'socket.io';
 import { AssistantService } from '../assistant/assistant.service';
 import { CommunityService } from '../community/community.service';
 import { CreateContributionDto } from '../community/dto/create-contribution.dto';
+import { CreateTrainingDialogueDto } from '../training/dto/create-training-dialogue.dto';
+import { TrainingService } from '../training/training.service';
 
 @WebSocketGateway({
   cors: {
@@ -22,6 +24,7 @@ export class ChatGateway {
   constructor(
     private readonly assistantService: AssistantService,
     private readonly communityService: CommunityService,
+    private readonly trainingService: TrainingService,
   ) {}
 
   @SubscribeMessage('message')
@@ -29,22 +32,37 @@ export class ChatGateway {
     @ConnectedSocket() client: Socket,
     @MessageBody() data: { prompt: string; language?: string },
   ) {
-    const result = await this.assistantService.processRequest(data.prompt, data.language);
+    try {
+      const result = await this.assistantService.processRequest(
+        data.prompt,
+        data.language,
+      );
 
-    const response = result.response;
-    for (let i = 0; i <= response.length; i += 16) {
-      await new Promise((resolve) => setTimeout(resolve, 50));
+      const response = result.response;
       client.emit('stream', {
-        chunk: response.slice(Math.max(0, i - 16), i),
-        done: i >= response.length,
+        chunk: response,
+        done: true,
         mode: result.mode,
         sources: result.sources,
         messageId: result.messageId,
         conversationId: result.conversationId,
       });
-    }
 
-    return result;
+      return result;
+    } catch (error) {
+      const message =
+        error instanceof Error && error.message === 'ollama_unavailable'
+          ? 'Le modele met trop de temps a repondre. Reessayez dans un instant, ou utilisez une question du corpus (proverbe, salutation).'
+          : 'Une erreur est survenue. Reessayez.';
+
+      client.emit('stream', {
+        chunk: message,
+        done: true,
+        mode: 'chat',
+        sources: [],
+      });
+      return { error: message };
+    }
   }
 
   @SubscribeMessage('typing')
@@ -64,5 +82,18 @@ export class ChatGateway {
       message: 'Merci pour votre contribution.',
     });
     return contribution;
+  }
+
+  @SubscribeMessage('training:submit')
+  async handleTrainingSubmit(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() dto: CreateTrainingDialogueDto,
+  ) {
+    const dialogue = await this.trainingService.submit(dto);
+    client.emit('training:status', {
+      id: dialogue.id,
+      status: dialogue.status,
+    });
+    return dialogue;
   }
 }

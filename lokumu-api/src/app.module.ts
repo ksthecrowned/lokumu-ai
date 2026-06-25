@@ -10,6 +10,7 @@ import { ChatModule } from './chat/chat.module';
 import { CommunityModule } from './community/community.module';
 import { ConversationModule } from './conversation/conversation.module';
 import { HealthModule } from './health/health.module';
+import { TrainingModule } from './training/training.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { HealthModule } from './health/health.module';
     AssistantModule,
     ChatModule,
     CommunityModule,
+    TrainingModule,
     ConversationModule,
     HealthModule,
   ],
