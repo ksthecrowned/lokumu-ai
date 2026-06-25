@@ -7,9 +7,20 @@ import { RagModule } from './rag/rag.module';
 import { ModelModule } from './model/model.module';
 import { AssistantModule } from './assistant/assistant.module';
 import { ChatModule } from './chat/chat.module';
+import { CommunityModule } from './community/community.module';
+import { HealthModule } from './health/health.module';
 
 @Module({
-  imports: [PrismaModule, AuthModule, RagModule, ModelModule, AssistantModule, ChatModule],
+  imports: [
+    PrismaModule,
+    AuthModule,
+    RagModule,
+    ModelModule,
+    AssistantModule,
+    ChatModule,
+    CommunityModule,
+    HealthModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
