@@ -5,6 +5,7 @@
 Lokumu AI is designed as a modular, domain-oriented system with clear separation of concerns. The architecture follows a microservices-inspired approach for scalability, while maintaining simplicity for the initial MVP (local functional version for investor presentations).
 
 ### Core Architectural Principles
+
 - **Modularity**: Each concern (auth, chat, RAG, models) is encapsulated in independent services
 - **Domain-Oriented**: Services organized by business capability rather than technical layers
 - **Technology Agnosticism**: Interfaces defined via APIs allowing future tech swaps
@@ -12,6 +13,7 @@ Lokumu AI is designed as a modular, domain-oriented system with clear separation
 - **Multilingual by Design**: Language support integrated at the data layer
 
 ### Component Diagram (Mermaid)
+
 ```mermaid
 graph TD
     A[User Interface] --> B[Lokumu Web (Next.js)]
@@ -33,6 +35,7 @@ graph TD
 ```
 
 ### Data Flow for Chat Request
+
 1. User submits message via Lokumu Web (Next.js)
 2. Request routed through API Gateway to Chat Service
 3. Chat Service validates session (via Auth Service)
@@ -59,7 +62,8 @@ lokumu-ai/
 └── lokumu-infra/         # Deployment configs (Docker, Kubernetes, scripts)
 ```
 
-**Reasoning**: 
+**Reasoning**:
+
 - Keeping API as a NestJS monolith initially simplifies development and deployment for MVP
 - Separate `lokumu-infra` isolates deployment concerns
 - Model and dataset repos remain separate for versioning large artifacts
@@ -68,6 +72,7 @@ lokumu-ai/
 ## 3. Organization of Folders Per Repository
 
 ### lokumu-api/ (NestJS)
+
 ```bash
 lokumu-api/
 ├── src/
@@ -85,6 +90,7 @@ lokumu-api/
 ```
 
 ### lokumu-web/ (Next.js)
+
 ```bash
 lokumu-web/
 ├── src/
@@ -105,6 +111,7 @@ lokumu-web/
 ```
 
 ### Other Repos (Standardized)
+
 ```bash
 # lokumu-models/
 ├── qwen/                 # Qwen model variants
@@ -145,23 +152,24 @@ lokumu-web/
 
 ## 4. Technology Recommendations & Justification
 
-| Layer              | Technology                          | Reasoning                                                                 |
-|--------------------|-------------------------------------|---------------------------------------------------------------------------|
-| **Frontend**       | Next.js 14 + TypeScript             | SSR/SSG for SEO, app router, excellent DX, mutual with Vercel deployment  |
-| **Backend**        | NestJS + TypeScript                 | Modular, DI, excellent for enterprise apps, TypeScript consistency        |
-| **Database**       | PostgreSQL 15 + pgvector            | ACID compliance, proven scalability, native vector support via pgvector   |
-| **ORM**            | Prisma                              | Type-safe, great DX, migrations, PostgreSQL + vector support              |
-| **Inference**      | llama.cpp (via Python wrapper)      | CPU-optimized, GGUF support, efficient quantization, active community     |
-| **Model Format**   | GGUF                                | Single-file, memory-mapped, quantized, works with llama.cpp               |
-| **Orchestration**  | LangGraph                           | Flexible agent workflows, state management, LangChain ecosystem           |
-| **Cache**          | Redis                               | Session storage, response caching, pub/sub for real-time features         |
-| **Message Queue**  | RabbitMQ                            | Reliable async processing (future: fine-tuning jobs)                      |
-| **API Gateway**    | NestJS built-in                     -           -                         |
-| **WebSocket**      | NestJS WebSocket gateway            -           -                         |
-| **Containerization**| Docker                              -           -                         |
-| **Observability**  | Prometheus + Grafana + Loki         -           -                         |
+| Layer                | Technology                      | Reasoning                                                                |
+| -------------------- | ------------------------------- | ------------------------------------------------------------------------ |
+| **Frontend**         | Next.js 14 + TypeScript         | SSR/SSG for SEO, app router, excellent DX, mutual with Vercel deployment |
+| **Backend**          | NestJS + TypeScript             | Modular, DI, excellent for enterprise apps, TypeScript consistency       |
+| **Database**         | PostgreSQL 15 + pgvector        | ACID compliance, proven scalability, native vector support via pgvector  |
+| **ORM**              | Prisma                          | Type-safe, great DX, migrations, PostgreSQL + vector support             |
+| **Inference**        | llama.cpp (via Python wrapper)  | CPU-optimized, GGUF support, efficient quantization, active community    |
+| **Model Format**     | GGUF                            | Single-file, memory-mapped, quantized, works with llama.cpp              |
+| **Orchestration**    | LangGraph                       | Flexible agent workflows, state management, LangChain ecosystem          |
+| **Cache**            | Redis                           | Session storage, response caching, pub/sub for real-time features        |
+| **Message Queue**    | RabbitMQ                        | Reliable async processing (future: fine-tuning jobs)                     |
+| **API Gateway**      | NestJS built-in - -             |
+| **WebSocket**        | NestJS WebSocket gateway - -    |
+| **Containerization** | Docker - -                      |
+| **Observability**    | Prometheus + Grafana + Loki - - |
 
 **Specific Justifications for Local Constraints**:
+
 - **GGUF + llama.cpp**: Enables 4-bit/8-bit quantization on CPU-only hardware. A Qwen2-7B model in Q4_K_M quantization uses ~3.8GB RAM, leaving headroom for OS, embedding model (bge-small-en-v1.5 ~500MB), and concurrent requests.
 - **Prisma over TypeORM**: Better PostgreSQL + vector support, superior migration system.
 - **Redis for caching**: Essential for reducing LLM inference load on repeated queries; stores chat summaries and frequent responses.
@@ -169,24 +177,26 @@ lokumu-web/
 
 ## 5. Naming Conventions
 
-| Context               | Convention          | Examples                                  |
-|-----------------------|---------------------|-------------------------------------------|
-| **Repositories**      | kebab-case          | `lokumu-api`, `lokumu-web`                |
-| **Database Tables**   | snake_case          | `user_sessions`, `chat_messages`          |
-| **Database Columns**  | snake_case          | `user_id`, `created_at`                   |
-| **TS Classes/Interfaces** | PascalCase      | `AuthService`, `ChatMessageDto`           |
-| **TS Functions/vars** | camelCase           | `generateResponse()`, `userSession`       |
-| **TS Constants**      | UPPER_SNAKE_CASE    | `MAX_MESSAGE_LENGTH`, `DEFAULT_TEMPERATURE` |
-| **API Endpoints**     | kebab-case          | `/api/v1/chats`, `/auth/refresh-token`    |
-| **Environment Vars**  | UPPER_SNAKE_CASE    | `DATABASE_URL`, `LLM_MODEL_PATH`          |
-| **Docker Images**     | lowercase-slash     | `lokumu/api:dev`, `lokumu/web:latest`     |
-| **Git Branches**      | feature/, fix/, feat/ | `feature/multilingual-support`            |
+| Context                   | Convention            | Examples                                    |
+| ------------------------- | --------------------- | ------------------------------------------- |
+| **Repositories**          | kebab-case            | `lokumu-api`, `lokumu-web`                  |
+| **Database Tables**       | snake_case            | `user_sessions`, `chat_messages`            |
+| **Database Columns**      | snake_case            | `user_id`, `created_at`                     |
+| **TS Classes/Interfaces** | PascalCase            | `AuthService`, `ChatMessageDto`             |
+| **TS Functions/vars**     | camelCase             | `generateResponse()`, `userSession`         |
+| **TS Constants**          | UPPER_SNAKE_CASE      | `MAX_MESSAGE_LENGTH`, `DEFAULT_TEMPERATURE` |
+| **API Endpoints**         | kebab-case            | `/api/v1/chats`, `/auth/refresh-token`      |
+| **Environment Vars**      | UPPER_SNAKE_CASE      | `DATABASE_URL`, `LLM_MODEL_PATH`            |
+| **Docker Images**         | lowercase-slash       | `lokumu/api:dev`, `lokumu/web:latest`       |
+| **Git Branches**          | feature/, fix/, feat/ | `feature/multilingual-support`              |
 
 ## 6. Core Modules Breakdown
 
 ### 6.1 Auth Service (`lokumu-api/src/auth`)
+
 **Responsibilities**: User registration, login, session management, role-based access control (RBAC)
 **Key Features**:
+
 - JWT access tokens (15-min expiry) + refresh tokens (7-day)
 - Password hashing with bcrypt (cost: 12)
 - Optional: OIDC/LDAP integration for enterprise
@@ -196,8 +206,10 @@ lokumu-web/
 **Why JWT for MVP?**: Stateless, simple to implement, works well with microservices later. Can evolve to session-store (Redis) if needed.
 
 ### 6.2 Chat Service (`lokumu-api/src/chat`)
+
 **Responsibilities**: Conversation management, message processing, context assembly
 **Key Features**:
+
 - Conversation threading with persistent storage
 - Message streaming (Server-Sent Events/WebSocket)
 - Language detection per message (fasttext or langdetect)
@@ -208,8 +220,10 @@ lokumu-web/
 **Language Detection**: Use `langdetect` (Python) via microservice call or `franc-min` (JS) for client-side hint. Critical for routing to appropriate models/embeddings later.
 
 ### 6.3 RAG Service (`lokumu-api/src/rag` + `lokumu-rag` repo)
+
 **Responsibilities**: Document ingestion, embedding generation, retrieval
 **Key Features**:
+
 - Multilingual sentence transformers (BAAI/bge-m3: 100+ languages)
 - Configurable chunking strategies (by language, document type)
 - Hybrid search: vector + keyword (PostgreSQL full-text + pgvector)
@@ -220,8 +234,10 @@ lokumu-web/
 **Embedding Choice**: BGE-M3 supports all target languages (French, Lingala, Kituba, English, Swahili) in one model, avoiding language-specific model switching.
 
 ### 6.4 Model Service (`lokumu-api/src/model`)
+
 **Responsibilities**: LLM inference management, worker coordination, prompt engineering
 **Key Features**:
+
 - Worker pool management (llama.cpp instances)
 - Quantization-aware loading (Q4_K_M, Q5_K_S, etc.)
 - Prompt templating per use case (chat, summarization, etc.)
@@ -229,7 +245,8 @@ lokumu-web/
 - Fallback to smaller models if OOM
 - Telemetry: tokens/sec, latency, VRAM/RAM usage
 
-**Worker Pattern**: 
+**Worker Pattern**:
+
 - Each worker loads one model instance
 - Model service dispatches requests to least-loaded worker
 - Workers communicate via Unix sockets or HTTP (localhost)
@@ -238,6 +255,7 @@ lokumu-web/
 ## 7. Database Schema Snippets (Prisma)
 
 ### `prisma/schema.prisma` (excerpt)
+
 ```prisma
 generator client {
   provider = "prisma-client-js"
@@ -329,6 +347,7 @@ model Chunk {
 ```
 
 **Reasoning**:
+
 - UUIDs prevent enumeration attacks, support distributed systems
 - Language stored at message/document level for granular filtering
 - JSON metadata flexible for document provenance
@@ -338,32 +357,35 @@ model Chunk {
 ## 8. API Endpoints
 
 ### Public Endpoints
-| Method | Endpoint             | Description                     |
-|--------|----------------------|---------------------------------|
-| POST   | `/auth/register`     | User registration               |
-| POST   | `/auth/login`        | Login (returns access/refresh)  |
-| POST   | `/auth/refresh`      | Refresh access token            |
-| GET    | `/health`            | Liveness/readiness check        |
+
+| Method | Endpoint         | Description                    |
+| ------ | ---------------- | ------------------------------ |
+| POST   | `/auth/register` | User registration              |
+| POST   | `/auth/login`    | Login (returns access/refresh) |
+| POST   | `/auth/refresh`  | Refresh access token           |
+| GET    | `/health`        | Liveness/readiness check       |
 
 ### Protected Endpoints (Require Auth)
-| Method | Endpoint                     | Description                                   |
-|--------|------------------------------|-----------------------------------------------|
-| GET    | `/chats`                     | List user's conversations                     |
-| POST   | `/chats`                     | Create new conversation                       |
-| GET    | `/chats/:id`                 | Get conversation with messages                |
-| POST   | `/chats/:id/messages`        | Send message (returns streaming response)     |
-| DELETE | `/chats/:id`                 | Delete conversation                           |
-| GET    | `/documents`                 | List uploaded documents (for RAG)             |
-| POST   | `/documents`                 | Upload document for RAG ingestion             |
-| GET    | `/models`                    | List available LLMs with status               |
-| POST   | `/models/:id/unload`         | Unload model to free memory                   |
 
-**WebSocket Endpoint**: `ws://localhost:3000/ws/chats/:id` for real-time message streaming.
+| Method | Endpoint              | Description                               |
+| ------ | --------------------- | ----------------------------------------- |
+| GET    | `/chats`              | List user's conversations                 |
+| POST   | `/chats`              | Create new conversation                   |
+| GET    | `/chats/:id`          | Get conversation with messages            |
+| POST   | `/chats/:id/messages` | Send message (returns streaming response) |
+| DELETE | `/chats/:id`          | Delete conversation                       |
+| GET    | `/documents`          | List uploaded documents (for RAG)         |
+| POST   | `/documents`          | Upload document for RAG ingestion         |
+| GET    | `/models`             | List available LLMs with status           |
+| POST   | `/models/:id/unload`  | Unload model to free memory               |
+
+**WebSocket Endpoint**: `ws://localhost:7000/ws/chats/:id` for real-time message streaming.
 
 ## 9. User Authentication & Authorization
 
 ### Flow
-1. **Registration**: 
+
+1. **Registration**:
    - User provides email, password, preferred language
    - Backend hashes password (bcrypt), creates User record
    - Returns minimal user object (no password)
@@ -386,6 +408,7 @@ model Chunk {
    - Resource ownership: Check userId matches request (e.g., chat deletion)
 
 ### Security Considerations
+
 - **CSRF Protection**: Double-submit cookie or SameSite=Strict cookies
 - **Rate Limiting**: 10 login attempts/min per IP (using express-rate-limit or NestJS throttler)
 - **Password Policy**: Min 12 chars, require mixed case, number, symbol
@@ -395,20 +418,22 @@ model Chunk {
 ## 10. Memory & RAG Management
 
 ### Memory Hierarchy
-| Layer              | Purpose                          | Technology          | Size/Limit          |
-|--------------------|----------------------------------|---------------------|---------------------|
-| **Working Memory** | Current conversation context     | In-memory (chat)    | Last 20 messages    |
-| **Short-Term**     | Recent conversation summary      | Redis (per session) | 1 conversation      |
-| **Long-Term**      | User preferences, history        | PostgreSQL          | Indefinite          |
-| **Knowledge Base** | Document embeddings              | PostgreSQL + pgvector | Scalable to TBs    |
+
+| Layer              | Purpose                      | Technology            | Size/Limit       |
+| ------------------ | ---------------------------- | --------------------- | ---------------- |
+| **Working Memory** | Current conversation context | In-memory (chat)      | Last 20 messages |
+| **Short-Term**     | Recent conversation summary  | Redis (per session)   | 1 conversation   |
+| **Long-Term**      | User preferences, history    | PostgreSQL            | Indefinite       |
+| **Knowledge Base** | Document embeddings          | PostgreSQL + pgvector | Scalable to TBs  |
 
 ### RAG Pipeline
+
 1. **Ingestion** (`lokumu-rag` repo):
    - Accept PDF, TXT, DOCX, URL
    - Extract text (using unstructured.io or custom)
    - Detect language (langdetect/fasttext)
    - Clean: remove headers/footers, fix encoding
-   - Chunk: 
+   - Chunk:
      ```python
      # Pseudocode - language-aware chunking
      if language in ["lin", "swa"]:  # Agglutinative languages
@@ -423,14 +448,14 @@ model Chunk {
 2. **Retrieval** (at query time):
    - Detect query language
    - Generate query embedding (same model)
-   - Search: 
+   - Search:
      ```sql
      -- Hybrid search example
      WITH vector_search AS (
        SELECT id, content, 1 - (embedding <=> query_embedding) AS similarity
-       FROM chunks 
+       FROM chunks
        WHERE language = query_language
-       ORDER BY embedding <=> query_embedding 
+       ORDER BY embedding <=> query_embedding
        LIMIT 20
      ),
      keyword_search AS (
@@ -452,7 +477,7 @@ model Chunk {
 
 3. **Context Assembly**:
    - Truncate chunks to fit LLM context window (reserving space for prompt/history)
-   - Format: 
+   - Format:
      ```
      [CONTEXT]
      Relevant excerpt 1 (source: document.pdf, p.5)
@@ -464,9 +489,10 @@ model Chunk {
      ```
 
 ### Memory Optimization for Local Hardware
+
 - **Embedding Model**: Use BGE-M3 (560MB quantized) or smaller BGE-SMALL (220MB) if RAM constrained
 - **Chunk Storage**: Store only content + embedding in DB; keep original files in `lokumu-datasets/raw/`
-- **Cache Layers**: 
+- **Cache Layers**:
   - Redis: cache frequent query embeddings (LRU, 1hr TTL)
   - LRU in Model Service: cache recent LLM responses for identical prompts
 - **Context Window**: Target 4k tokens for Qwen2-7B (leaves room for generation)
@@ -474,7 +500,8 @@ model Chunk {
 ## 11. AI Agents System (LangGraph)
 
 ### Agent Types for MVP
-1. **Chat Agent**: 
+
+1. **Chat Agent**:
    - Main orchestrator for conversation flow
    - Tools: `search_knowledge_base`, `get_conversation_history`, `detect_language`
    - Decision: Whether to use RAG or direct chat (based on query type)
@@ -488,6 +515,7 @@ model Chunk {
    - Uses LLM-as-a-judge with rubric
 
 ### LangGraph Implementation (simplified)
+
 ```python
 # lokumu-rag/src/agents/chat_agent.py
 from langgraph.graph import StateGraph, END
@@ -542,6 +570,7 @@ app = workflow.compile()
 ```
 
 **Reasoning for LangGraph**:
+
 - Visual workflow debugging (LangGraph Studio)
 - Easy to add/remove agents without rewriting core logic
 - State persistence enables long-running agent processes
@@ -552,6 +581,7 @@ app = workflow.compile()
 While MVP uses base models, architecture supports future LoRA/QLoRA fine-tuning:
 
 ### Training Pipeline Components
+
 1. **Data Preparation** (`lokumu-datasets`):
    - Curated instruction-response pairs in target languages
    - Format: Alpaca or ShareGPT JSON
@@ -565,13 +595,14 @@ While MVP uses base models, architecture supports future LoRA/QLoRA fine-tuning:
 
 3. **Model Service Integration**:
    - Dynamically load LoRA adapters atop base model
-   - Routing: 
+   - Routing:
      - Base model: general chat
      - LoRA-chat: fine-tuned conversational style
      - LoRA-code: for Lokumu-1-Coder variant
      - LoRA-reasoning: for Lokumu-1-Reasoning variant
 
 ### Resource Requirements for Local Fine-Tuning
+
 - **GPU Preferred**: Even entry-level GPU (GTX 1660+) speeds up training 10x
 - **CPU Fallback**: Possible with bitsandbytes + CPU offload (very slow)
 - **Quantization**: Train in 4-bit, store adapters as ~100MB files
@@ -584,20 +615,23 @@ While MVP uses base models, architecture supports future LoRA/QLoRA fine-tuning:
 ## 13. Dataset Storage Strategy
 
 ### Tiered Approach
-| Tier             | Use Case                     | Technology          | Access Pattern      |
-|------------------|------------------------------|---------------------|---------------------|
-| **Hot**          | Active training/inference    | Local NVMe SSD      | Millisecond latency |
-| **Warm**         | Archive, infrequent access   | External SSD/HDD    | Second latency      |
-| **Cold**         | Long-term backup             | LTO tape/cloud      | Hour+ latency       |
-| **Analytical**   | Dataset exploration          | DuckDB/Parquet      | Interactive query   |
+
+| Tier           | Use Case                   | Technology       | Access Pattern      |
+| -------------- | -------------------------- | ---------------- | ------------------- |
+| **Hot**        | Active training/inference  | Local NVMe SSD   | Millisecond latency |
+| **Warm**       | Archive, infrequent access | External SSD/HDD | Second latency      |
+| **Cold**       | Long-term backup           | LTO tape/cloud   | Hour+ latency       |
+| **Analytical** | Dataset exploration        | DuckDB/Parquet   | Interactive query   |
 
 ### Implementation
-- **Primary Storage**: 
+
+- **Primary Storage**:
   - `~/lokumu-data/datasets/` mounted to containers
   - Organized by: `source/language/raw|processed/`
   - Example: `wikipedia/fr/processed/articles_2024.parquet`
-  
+
 - **Metadata Catalog** (PostgreSQL table):
+
   ```sql
   CREATE TABLE dataset_catalog (
       id UUID PRIMARY KEY,
@@ -633,10 +667,11 @@ While MVP uses base models, architecture supports future LoRA/QLoRA fine-tuning:
   ```
 
 ### Language-Specific Considerations
+
 - **Lingala/Kituba**: Limited NLP resources; rely on sentence-transformers multilingual models
 - **Swahili**: Relatively well-resourced; can use AfroXLMR
 - **French/English**: Abundant resources; prioritize high-quality sources
-- **Data Sources**: 
+- **Data Sources**:
   - Wikipedia dumps (all target languages)
   - OSCOR (African corpora)
   - Common Crawl (filtered by language)
@@ -646,9 +681,11 @@ While MVP uses base models, architecture supports future LoRA/QLoRA fine-tuning:
 ## 14. Deployment Strategies
 
 ### Local Deployment (Investor Demo)
+
 **Docker Compose** (`lokumu-infra/docker-compose/dev.yml`):
+
 ```yaml
-version: '3.8'
+version: "3.8"
 services:
   postgres:
     image: postgres:15-alpine
@@ -675,7 +712,7 @@ services:
   api:
     build: ./lokumu-api
     ports:
-      - "3000:3000"
+      - "7000:7000"
     environment:
       - DATABASE_URL=postgresql://lokumu:${POSTGRES_PASSWORD}@postgres:5432/lokumu
       - REDIS_URL=redis://redis:6379
@@ -693,12 +730,12 @@ services:
   web:
     build: ./lokumu-web
     ports:
-      - "3001:3001"
+      - "7001:7001"
     volumes:
       - ./lokumu-web:/app
       - /app/node_modules
     environment:
-      - NEXT_PUBLIC_API_URL=http://localhost:3000
+      - NEXT_PUBLIC_API_URL=http://localhost:7000
     depends_on:
       - api
 
@@ -707,30 +744,33 @@ volumes:
 ```
 
 **Inference Service Addition** (for better separation):
+
 ```yaml
-  inference:
-    build: ./lokumu-inference  # New service
-    ports:
-      - "8000:8000"
-    environment:
-      - MODEL_PATH=/models
-      - NUM_WORKERS=2  # Based on CPU cores
-    volumes:
-      - ./lokumu-inference:/app
-      - ./lokumu-models:/models:ro
-      - ./dev-shared-models:/dev-shared  # For sharing quantized models
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: cuda
-              count: 0  # CPU-only
-        limits:
-          memory: 8G  # Leave room for other services
+inference:
+  build: ./lokumu-inference # New service
+  ports:
+    - "8000:8000"
+  environment:
+    - MODEL_PATH=/models
+    - NUM_WORKERS=2 # Based on CPU cores
+  volumes:
+    - ./lokumu-inference:/app
+    - ./lokumu-models:/models:ro
+    - ./dev-shared-models:/dev-shared # For sharing quantized models
+  deploy:
+    resources:
+      reservations:
+        devices:
+          - driver: cuda
+            count: 0 # CPU-only
+      limits:
+        memory: 8G # Leave room for other services
 ```
 
 ### Cloud Deployment Preparation
+
 **Kubernetes Manifests** (`lokumu-infra/kubernetes/`):
+
 - Separate deployments for each service (auth, chat, web, etc.)
 - HorizontalPodAutoscaler based on CPU/RAM/queue depth
 - PersistentVolumes for PostgreSQL (using cloud provider's managed DB recommended)
@@ -741,6 +781,7 @@ volumes:
 - Logging: Loki + Promtail or ELK stack
 
 **Environment Parity**:
+
 - Use same docker images locally and in cloud
 - Feature flags for cloud-only services (e.g., managed Redis vs self-hosted)
 - Database connection string as sole env var difference
@@ -748,18 +789,21 @@ volumes:
 ## 15. Security, Monitoring & Scalability
 
 ### Security Measures
-| Layer              | Controls                                                                 |
-|--------------------|--------------------------------------------------------------------------|
-| **Network**        | - TLS 1.3 everywhere (Let's Encrypt locally, cloud certs in prod)<br>- API Gateway: rate limiting, IP allowlists for admin<br>- Database: VPC isolation, no public internet access |
-| **Application**    | - Input validation (class-validator + sanitizer-html)<br>- Output encoding (to prevent XSS)<br>- CSRF protection (double-submit cookie)<br>- Security headers (Helmet.js equivalent)<br>- Dependency scanning (npm audit, safety) |
-| **Data**           | - Encryption at rest (LUKS for disks, TDE for PostgreSQL optional)<br>- Field-level encryption for PII (if needed)<br>- Regular backups (automated to object storage)<br>- GDPR-compliant data deletion |
-| **Monitoring**     | - Failed login alerts (brute force detection)<br>- Anomalous query detection (SQLi, prompt injection)<br>- Model output safety checks (toxicity, bias) |
-| **Human**          | - Regular security training for devs<br>- Penetration testing scope (external/internet-facing)<br>- Bug bounty program (future) |
+
+| Layer           | Controls                                                                                                                                                                                                                          |
+| --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Network**     | - TLS 1.3 everywhere (Let's Encrypt locally, cloud certs in prod)<br>- API Gateway: rate limiting, IP allowlists for admin<br>- Database: VPC isolation, no public internet access                                                |
+| **Application** | - Input validation (class-validator + sanitizer-html)<br>- Output encoding (to prevent XSS)<br>- CSRF protection (double-submit cookie)<br>- Security headers (Helmet.js equivalent)<br>- Dependency scanning (npm audit, safety) |
+| **Data**        | - Encryption at rest (LUKS for disks, TDE for PostgreSQL optional)<br>- Field-level encryption for PII (if needed)<br>- Regular backups (automated to object storage)<br>- GDPR-compliant data deletion                           |
+| **Monitoring**  | - Failed login alerts (brute force detection)<br>- Anomalous query detection (SQLi, prompt injection)<br>- Model output safety checks (toxicity, bias)                                                                            |
+| **Human**       | - Regular security training for devs<br>- Penetration testing scope (external/internet-facing)<br>- Bug bounty program (future)                                                                                                   |
 
 ### Monitoring & Observability
+
 **Metrics** (Prometheus):
+
 - **System**: CPU, memory, disk, network (node_exporter)
-- **Application**: 
+- **Application**:
   - Request latency (by endpoint, status code)
   - Error rates (5xx, 4xx)
   - Database query performance
@@ -773,6 +817,7 @@ volumes:
   - User retention (DAU/MAU)
 
 **Logs** (Structured JSON):
+
 ```json
 {
   "timestamp": "2026-06-19T10:30:00Z",
@@ -790,23 +835,141 @@ volumes:
 ```
 
 **Distributed Tracing** (Jaeger or Tempo):
+
 - Track request flow: API Gateway → Auth → Chat → RAG → Model → Web
 - Essential for diagnosing latency issues in microservices
 
 ### Scalability Strategies
-| Dimension          | Approach                                                                 |
-|--------------------|--------------------------------------------------------------------------|
-| **Vertical**       | - Optimize inference batching<br>- Tune pgvector indexes (ivfflat vs hnsw)<br>- Increase connection pools<br>- Redis maxmemory policy |
-| **Horizontal**     | - Stateless services (API, web) behind load balancer<br>- Read replicas for PostgreSQL (analytics/offload)<br>- Sharding by user ID range (future)<br>- Multiple inference workers (GPU nodes) |
-| **Caching**        | - Multi-level: L1 (in-process), L2 (Redis), L3 (CDN for static assets)<br>- Cache warming for frequent queries<br>- Cache invalidation on document update |
-| **Database**       | - Partition conversations by date (time-series)<br>- Archive old conversations to cheaper storage<br>- Use connection pooling (PgBouncer)<br>- Read replicas for reporting |
-| **ML Specific**    | - Model quantization (4-bit → 3-bit if needed)<br>- Dynamic batching in inference service<br>- Model caching (LRU of loaded models)<br>- Asynchronous generation (WebSockets/SSE) |
+
+| Dimension       | Approach                                                                                                                                                                                       |
+| --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Vertical**    | - Optimize inference batching<br>- Tune pgvector indexes (ivfflat vs hnsw)<br>- Increase connection pools<br>- Redis maxmemory policy                                                          |
+| **Horizontal**  | - Stateless services (API, web) behind load balancer<br>- Read replicas for PostgreSQL (analytics/offload)<br>- Sharding by user ID range (future)<br>- Multiple inference workers (GPU nodes) |
+| **Caching**     | - Multi-level: L1 (in-process), L2 (Redis), L3 (CDN for static assets)<br>- Cache warming for frequent queries<br>- Cache invalidation on document update                                      |
+| **Database**    | - Partition conversations by date (time-series)<br>- Archive old conversations to cheaper storage<br>- Use connection pooling (PgBouncer)<br>- Read replicas for reporting                     |
+| **ML Specific** | - Model quantization (4-bit → 3-bit if needed)<br>- Dynamic batching in inference service<br>- Model caching (LRU of loaded models)<br>- Asynchronous generation (WebSockets/SSE)              |
 
 **Scaling Triggers for MVP**:
+
 - Single node (current i5-8365U) → supports ~2-3 concurrent users <5s latency
 - Add GPU (e.g., T4) → 10x inference throughput
 - Add second CPU node → horizontal scaling for API/web
 - Add read replica → scale read-heavy workloads (RAG retrieval)
+
+## 16. Phase 2: Conversational Assistant
+
+Phase 2 extends the cultural demo into a multi-turn conversational assistant with expanded RAG corpus (~2 000 chunks), training dialogue collection, and a LoRA fine-tuning workflow. Inference remains 100% offline on the demo machine; training runs on an external GPU.
+
+### 16.1 Two-phase pipeline
+
+```
+PREPARATION (external machine, periodic)
+  Sources: Eliet 1953, Kupsala, seed, training dialogues
+       ↓
+  [A] RAG corpus  →  ~2 000 chunks  →  PostgreSQL/pgvector
+  [B] LoRA dataset →  JSONL from dialogues + synthetic pairs
+       ↓
+  Fine-tune LoRA (base: qwen2.5:7b) on external GPU
+       ↓
+  Merge + export GGUF  →  lokumu-kit-lin:latest in Ollama
+
+RUNTIME (100% offline — demo machine)
+  User → lokumu-web → WebSocket → AssistantService
+       ↓
+  1. Resolve/create Conversation; persist user message
+  2. Load last 8–12 turns from ChatMessage
+  3. RAG: adaptive top-k from expanded corpus
+  4. LLM: system prompt + history + RAG context → Ollama
+  5. Post-process: citations, persist assistant + chunk IDs
+  6. Stream/emit response → client
+```
+
+### 16.2 Conversation module (`lokumu-api/src/conversation/`)
+
+`ConversationService` manages multi-turn chat state:
+
+- **`resolveConversation(conversationId?, language)`** — reuses an existing conversation or creates one for the demo user
+- **`appendMessage(...)`** — persists user/assistant turns with optional `usedChunkIds` for citation tracking
+- **`getRecentHistory(conversationId, limit)`** — loads the last N turns (default `CONVERSATION_HISTORY_TURNS=10`) for LLM context
+
+The WebSocket chat handler passes `conversationId` from the client so follow-ups like "Na yo?" after "Mbote" stay in the same thread.
+
+### 16.3 Training module (`lokumu-api/src/training/`)
+
+Collects community-submitted multi-turn dialogues for LoRA fine-tuning (distinct from community corrections, which go directly into RAG).
+
+| Endpoint | Method | Purpose |
+| -------- | ------ | ------- |
+| `/training/dialogues` | POST | Submit dialogue (min 2 turns, user + assistant) |
+| `/training/dialogues` | GET | List dialogues (filter by status) |
+| `/training/dialogues/:id/approve` | POST | Approve for export |
+
+**Prisma model:** `TrainingDialogue` — `turns` (JSON), `language` (`kit` \| `lin`), `status` (`pending` \| `approved` \| `exported`).
+
+When `TRAINING_AUTO_APPROVE=true` (dev only), submissions are approved immediately.
+
+**Client UI:** `lokumu-web/src/app/train/` — manual entry and "Enregistrer pour l'entraînement" from chat (pre-filled turns).
+
+**Export:** `npm run training:export` → `data/training/lokumu-kit-lin.jsonl` (chat-format JSONL); marks records with `exportedAt`.
+
+### 16.4 Corpus pipeline
+
+Expanded cultural corpus targeting ~2 000 RAG chunks:
+
+| Source | Content | ~Chunks |
+| ------ | ------- | ------- |
+| Eliet lexicon | 1 expression = 1 chunk (KIT + LIN + FR) | ~600 |
+| Eliet grammar | 1 rule or table = 1 chunk | ~150 |
+| Kupsala word list | 1 entry = 1 chunk | ~800 |
+| Dialogue examples | Greetings, introductions, thanks | ~200 |
+| Comparative pairs | Kituba vs Lingala phrasing | ~200 |
+| Seed + community | Proverbs, expressions, corrections | ~50+ |
+
+**Pipeline scripts** (`lokumu-api/scripts/`):
+
+- `parse-eliet-html.ts` — HTML → Markdown in `data/cultural/processed/eliet-1953/`
+- `ingest-cultural.ts` — chunk processed Markdown, dialogues JSON, and seed content into PostgreSQL/pgvector
+- `count-corpus-chunks.ts` — verify chunk count ≥ 2000
+
+**Adaptive top-k** (via `RagService` + mode detector):
+
+| Query signal | top-k | Metadata priority |
+| ------------ | ----- | ----------------- |
+| Greeting, small talk | 6–8 | `dialogue_example`, `greeting` |
+| Translation | 3–4 | `lexicon`, `grammar` |
+| Grammar / conjugation | 2–3 | `grammar`, section match |
+| Proverb / culture | 3–5 | `proverb`, `cultural_note` |
+
+### 16.5 LoRA workflow & `lokumu-kit-lin` model
+
+Fine-tuning runs on an external GPU machine; the demo machine only imports the merged artifact.
+
+1. Export approved dialogues: `cd lokumu-api && npm run training:export`
+2. Copy `data/training/lokumu-kit-lin.jsonl` to the training machine
+3. Fine-tune LoRA on `qwen2.5:7b` (Unsloth, LLaMA-Factory, or equivalent)
+4. Merge adapter weights into base model; export GGUF
+5. On the demo machine: `ollama create lokumu-kit-lin -f models/lokumu-kit-lin/Modelfile`
+
+**Model definition** (`models/lokumu-kit-lin/Modelfile`):
+
+- Base: `qwen2.5:7b`
+- System prompt: Lokumu cultural/linguistic assistant (kituba, lingala, FR, EN)
+- Parameters: `temperature 0.7`, `num_ctx 8192`
+
+**Runtime env vars:**
+
+```env
+OLLAMA_MODEL=lokumu-kit-lin:latest
+OLLAMA_FALLBACK_MODEL=qwen2.5:7b
+TRAINING_AUTO_APPROVE=true       # dev only
+CONVERSATION_HISTORY_TURNS=10
+RAG_TOP_K_VAGUE=8
+RAG_TOP_K_PRECISE=3
+```
+
+`AssistantService` always routes non-fast-path requests through `ModelService` → Ollama, with RAG context and anti-hallucination prompts. Fast-path templates remain for known greeting chips.
+
+**E2E verification:** see [Phase 2 E2E Checklist](./docs/superpowers/plans/2026-06-25-conversational-lokumu-e2e.md).
 
 ## Next Steps for Implementation
 
@@ -820,6 +983,7 @@ volumes:
 8. **Week 8**: Performance optimization, investor demo preparation
 
 This architecture provides a solid foundation that:
+
 - Delivers a functional local MVP for investor presentations
 - Is scalable to cloud and higher traffic
 - Supports the multilingual requirement from day one
