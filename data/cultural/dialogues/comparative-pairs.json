@@ -1,0 +1,502 @@
+[
+  {
+    "id": "comparative-kit-lin-001",
+    "type": "comparative",
+    "language": "fra",
+    "title": "Bonjour",
+    "content": "Kituba: Mbote. | Lingala: Mbote.",
+    "translation_fr": "Les deux langues utilisent la meme formule de base pour saluer.",
+    "tags": ["comparative", "greeting", "beginner"],
+    "source": "synthetic://comparative-kit-lin-001"
+  },
+  {
+    "id": "comparative-kit-lin-002",
+    "type": "comparative",
+    "language": "fra",
+    "title": "Comment vas-tu",
+    "content": "Kituba: Nge me kwenda mbote? | Lingala: Ozali malamu?",
+    "translation_fr": "Les deux expressions demandent l etat de sante de l interlocuteur.",
+    "tags": ["comparative", "health", "beginner"],
+    "source": "synthetic://comparative-kit-lin-002"
+  },
+  {
+    "id": "comparative-kit-lin-003",
+    "type": "comparative",
+    "language": "fra",
+    "title": "Je vais bien",
+    "content": "Kituba: Mono me kwenda mbote. | Lingala: Nazali malamu.",
+    "translation_fr": "Reponse positive standard dans les deux langues.",
+    "tags": ["comparative", "response", "beginner"],
+    "source": "synthetic://comparative-kit-lin-003"
+  },
+  {
+    "id": "comparative-kit-lin-004",
+    "type": "comparative",
+    "language": "fra",
+    "title": "Merci",
+    "content": "Kituba: Matondo mingi. | Lingala: Matondi mingi.",
+    "translation_fr": "Variation orthographique sur le mot de gratitude.",
+    "tags": ["comparative", "politeness", "beginner"],
+    "source": "synthetic://comparative-kit-lin-004"
+  },
+  {
+    "id": "comparative-kit-lin-005",
+    "type": "comparative",
+    "language": "fra",
+    "title": "De rien",
+    "content": "Kituba: Kima ve. | Lingala: Ezali mpamba.",
+    "translation_fr": "Deux facons courantes de repondre a un merci.",
+    "tags": ["comparative", "politeness", "response"],
+    "source": "synthetic://comparative-kit-lin-005"
+  },
+  {
+    "id": "comparative-kit-lin-006",
+    "type": "comparative",
+    "language": "fra",
+    "title": "Bienvenue",
+    "content": "Kituba: Lenda mbote. | Lingala: Boyei malamu.",
+    "translation_fr": "Formules d accueil paralleles.",
+    "tags": ["comparative", "hospitality", "greeting"],
+    "source": "synthetic://comparative-kit-lin-006"
+  },
+  {
+    "id": "comparative-kit-lin-007",
+    "type": "comparative",
+    "language": "fra",
+    "title": "Au revoir",
+    "content": "Kituba: Tala nge na nima. | Lingala: Tokomonana lisusu.",
+    "translation_fr": "Kituba insiste sur le futur proche; Lingala sur la re-rencontre.",
+    "tags": ["comparative", "farewell", "conversation"],
+    "source": "synthetic://comparative-kit-lin-007"
+  },
+  {
+    "id": "comparative-kit-lin-008",
+    "type": "comparative",
+    "language": "fra",
+    "title": "Pardon",
+    "content": "Kituba: Lemvo. | Lingala: Limbisa ngai.",
+    "translation_fr": "Kituba emploie une forme courte; Lingala une phrase complete.",
+    "tags": ["comparative", "politeness", "excuse"],
+    "source": "synthetic://comparative-kit-lin-008"
+  },
+  {
+    "id": "comparative-kit-lin-009",
+    "type": "comparative",
+    "language": "fra",
+    "title": "Paix sur toi",
+    "content": "Kituba: Kimia na nge. | Lingala: Kimia na yo.",
+    "translation_fr": "La structure est quasi identique avec variation pronominale.",
+    "tags": ["comparative", "religious", "greeting"],
+    "source": "synthetic://comparative-kit-lin-009"
+  },
+  {
+    "id": "comparative-kit-lin-010",
+    "type": "comparative",
+    "language": "fra",
+    "title": "Quelles nouvelles",
+    "content": "Kituba: Nsangu nini? | Lingala: Sango nini?",
+    "translation_fr": "Lexemes tres proches pour demander des nouvelles.",
+    "tags": ["comparative", "conversation", "beginner"],
+    "source": "synthetic://comparative-kit-lin-010"
+  },
+  {
+    "id": "comparative-kit-lin-011",
+    "type": "comparative",
+    "language": "fra",
+    "title": "Entrez",
+    "content": "Kituba: Kota. | Lingala: Kota.",
+    "translation_fr": "Imperatif strictement identique dans les deux langues.",
+    "tags": ["comparative", "imperative", "home"],
+    "source": "synthetic://comparative-kit-lin-011"
+  },
+  {
+    "id": "comparative-kit-lin-012",
+    "type": "comparative",
+    "language": "fra",
+    "title": "Asseyez-vous",
+    "content": "Kituba: Vanda. | Lingala: Fanda.",
+    "translation_fr": "Variation consonantique initiale pour le meme verbe.",
+    "tags": ["comparative", "imperative", "phonetics"],
+    "source": "synthetic://comparative-kit-lin-012"
+  },
+  {
+    "id": "comparative-kit-lin-013",
+    "type": "comparative",
+    "language": "fra",
+    "title": "Nous allons",
+    "content": "Kituba: Beto twendi. | Lingala: Tokende.",
+    "translation_fr": "Les deux marquent une action collective en cours de depart.",
+    "tags": ["comparative", "movement", "verbs"],
+    "source": "synthetic://comparative-kit-lin-013"
+  },
+  {
+    "id": "comparative-kit-lin-014",
+    "type": "comparative",
+    "language": "fra",
+    "title": "Je viens",
+    "content": "Kituba: Mono ke kwiza. | Lingala: Nayei.",
+    "translation_fr": "Kituba garde un auxiliaire de progression, Lingala forme simple.",
+    "tags": ["comparative", "verbs", "beginner"],
+    "source": "synthetic://comparative-kit-lin-014"
+  },
+  {
+    "id": "comparative-kit-lin-015",
+    "type": "comparative",
+    "language": "fra",
+    "title": "Je pars",
+    "content": "Kituba: Mono ke kwenda. | Lingala: Nakeyi.",
+    "translation_fr": "Meme sens avec realisations verbales distinctes.",
+    "tags": ["comparative", "verbs", "movement"],
+    "source": "synthetic://comparative-kit-lin-015"
+  },
+  {
+    "id": "comparative-kit-lin-016",
+    "type": "comparative",
+    "language": "fra",
+    "title": "A demain",
+    "content": "Kituba: Beto talana lumbu yina ke kwiza. | Lingala: Tokomonana lobi.",
+    "translation_fr": "Kituba expression descriptive; Lingala expression compacte.",
+    "tags": ["comparative", "time", "farewell"],
+    "source": "synthetic://comparative-kit-lin-016"
+  },
+  {
+    "id": "comparative-kit-lin-017",
+    "type": "comparative",
+    "language": "fra",
+    "title": "Bonne nuit",
+    "content": "Kituba: Lala mbote. | Lingala: Lala malamu.",
+    "translation_fr": "Deux formules equivalentes avec adjectifs differents.",
+    "tags": ["comparative", "evening", "greeting"],
+    "source": "synthetic://comparative-kit-lin-017"
+  },
+  {
+    "id": "comparative-kit-lin-018",
+    "type": "comparative",
+    "language": "fra",
+    "title": "Bon appetit",
+    "content": "Kituba: Dia mbote. | Lingala: Lia malamu.",
+    "translation_fr": "Meme intention de politesse avant le repas.",
+    "tags": ["comparative", "food", "politeness"],
+    "source": "synthetic://comparative-kit-lin-018"
+  },
+  {
+    "id": "comparative-kit-lin-019",
+    "type": "comparative",
+    "language": "fra",
+    "title": "Tu as compris",
+    "content": "Kituba: Nge me bakisa? | Lingala: Ososoli?",
+    "translation_fr": "Question pedagogique dans un contexte d apprentissage.",
+    "tags": ["comparative", "learning", "question"],
+    "source": "synthetic://comparative-kit-lin-019"
+  },
+  {
+    "id": "comparative-kit-lin-020",
+    "type": "comparative",
+    "language": "fra",
+    "title": "Je comprends",
+    "content": "Kituba: Mono me bakisa. | Lingala: Nasosoli.",
+    "translation_fr": "Reponse affirmative a une verification de comprehension.",
+    "tags": ["comparative", "learning", "response"],
+    "source": "synthetic://comparative-kit-lin-020"
+  },
+  {
+    "id": "comparative-kit-lin-021",
+    "type": "comparative",
+    "language": "fra",
+    "title": "Parle doucement",
+    "content": "Kituba: Sola malembe. | Lingala: Loba malembe.",
+    "translation_fr": "Meme adverbe, verbe different pour parler.",
+    "tags": ["comparative", "imperative", "conversation"],
+    "source": "synthetic://comparative-kit-lin-021"
+  },
+  {
+    "id": "comparative-kit-lin-022",
+    "type": "comparative",
+    "language": "fra",
+    "title": "Parle fort",
+    "content": "Kituba: Sola ngolo. | Lingala: Loba makasi.",
+    "translation_fr": "Expression de projection vocale dans les deux langues.",
+    "tags": ["comparative", "imperative", "conversation"],
+    "source": "synthetic://comparative-kit-lin-022"
+  },
+  {
+    "id": "comparative-kit-lin-023",
+    "type": "comparative",
+    "language": "fra",
+    "title": "Attends un peu",
+    "content": "Kituba: Vanda fioti. | Lingala: Zela moke.",
+    "translation_fr": "Deux verbes differents pour demander de patienter.",
+    "tags": ["comparative", "imperative", "time"],
+    "source": "synthetic://comparative-kit-lin-023"
+  },
+  {
+    "id": "comparative-kit-lin-024",
+    "type": "comparative",
+    "language": "fra",
+    "title": "Je ne sais pas",
+    "content": "Kituba: Mono zaba ve. | Lingala: Nayebi te.",
+    "translation_fr": "Negation equivalente avec particules distinctes.",
+    "tags": ["comparative", "negation", "beginner"],
+    "source": "synthetic://comparative-kit-lin-024"
+  },
+  {
+    "id": "comparative-kit-lin-025",
+    "type": "comparative",
+    "language": "fra",
+    "title": "Je sais",
+    "content": "Kituba: Mono zaba. | Lingala: Nayebi.",
+    "translation_fr": "Formes positives de connaissance.",
+    "tags": ["comparative", "verbs", "beginner"],
+    "source": "synthetic://comparative-kit-lin-025"
+  },
+  {
+    "id": "comparative-kit-lin-026",
+    "type": "comparative",
+    "language": "fra",
+    "title": "Donne-moi",
+    "content": "Kituba: Pesa mono. | Lingala: Pesa ngai.",
+    "translation_fr": "Le verbe donner est identique, le pronom objet change.",
+    "tags": ["comparative", "imperative", "pronouns"],
+    "source": "synthetic://comparative-kit-lin-026"
+  },
+  {
+    "id": "comparative-kit-lin-027",
+    "type": "comparative",
+    "language": "fra",
+    "title": "Prends",
+    "content": "Kituba: Baka. | Lingala: Kamata.",
+    "translation_fr": "Lexemes differents pour l action de prendre.",
+    "tags": ["comparative", "imperative", "verbs"],
+    "source": "synthetic://comparative-kit-lin-027"
+  },
+  {
+    "id": "comparative-kit-lin-028",
+    "type": "comparative",
+    "language": "fra",
+    "title": "Regarde",
+    "content": "Kituba: Tala. | Lingala: Tala.",
+    "translation_fr": "Forme identique pour attirer l attention visuelle.",
+    "tags": ["comparative", "imperative", "shared-form"],
+    "source": "synthetic://comparative-kit-lin-028"
+  },
+  {
+    "id": "comparative-kit-lin-029",
+    "type": "comparative",
+    "language": "fra",
+    "title": "Ecoute",
+    "content": "Kituba: Wa. | Lingala: Yoka.",
+    "translation_fr": "Commande auditive avec racines verbales distinctes.",
+    "tags": ["comparative", "imperative", "verbs"],
+    "source": "synthetic://comparative-kit-lin-029"
+  },
+  {
+    "id": "comparative-kit-lin-030",
+    "type": "comparative",
+    "language": "fra",
+    "title": "Viens ici",
+    "content": "Kituba: Kwiza awa. | Lingala: Yaka awa.",
+    "translation_fr": "Meme deictique awa, variation sur le verbe venir.",
+    "tags": ["comparative", "movement", "imperative"],
+    "source": "synthetic://comparative-kit-lin-030"
+  },
+  {
+    "id": "comparative-kit-lin-031",
+    "type": "comparative",
+    "language": "fra",
+    "title": "Va la-bas",
+    "content": "Kituba: Kwenda kuna. | Lingala: Kende kuna.",
+    "translation_fr": "Meme direction spatiale avec morphologie verbale proche.",
+    "tags": ["comparative", "movement", "deictic"],
+    "source": "synthetic://comparative-kit-lin-031"
+  },
+  {
+    "id": "comparative-kit-lin-032",
+    "type": "comparative",
+    "language": "fra",
+    "title": "Ici et la-bas",
+    "content": "Kituba: Awa / kuna. | Lingala: Awa / kuna.",
+    "translation_fr": "Systeme de localisation partage.",
+    "tags": ["comparative", "location", "shared-form"],
+    "source": "synthetic://comparative-kit-lin-032"
+  },
+  {
+    "id": "comparative-kit-lin-033",
+    "type": "comparative",
+    "language": "fra",
+    "title": "Aujourd hui",
+    "content": "Kituba: Bubu yayi. | Lingala: Lelo.",
+    "translation_fr": "Deux adverbes temporels usuels pour le present.",
+    "tags": ["comparative", "time", "adverb"],
+    "source": "synthetic://comparative-kit-lin-033"
+  },
+  {
+    "id": "comparative-kit-lin-034",
+    "type": "comparative",
+    "language": "fra",
+    "title": "Demain",
+    "content": "Kituba: Lumbu yina ke kwiza. | Lingala: Lobi.",
+    "translation_fr": "Kituba periphrastique, Lingala lexicalise.",
+    "tags": ["comparative", "time", "adverb"],
+    "source": "synthetic://comparative-kit-lin-034"
+  },
+  {
+    "id": "comparative-kit-lin-035",
+    "type": "comparative",
+    "language": "fra",
+    "title": "Hier",
+    "content": "Kituba: Lumbu me luta. | Lingala: Lobi eleki.",
+    "translation_fr": "Les deux marquent le jour precedent avec constructions proches.",
+    "tags": ["comparative", "time", "adverb"],
+    "source": "synthetic://comparative-kit-lin-035"
+  },
+  {
+    "id": "comparative-kit-lin-036",
+    "type": "comparative",
+    "language": "fra",
+    "title": "Eau",
+    "content": "Kituba: Maza. | Lingala: Mai.",
+    "translation_fr": "Lexiques distincts pour un nom tres frequent.",
+    "tags": ["comparative", "vocabulary", "daily-life"],
+    "source": "synthetic://comparative-kit-lin-036"
+  },
+  {
+    "id": "comparative-kit-lin-037",
+    "type": "comparative",
+    "language": "fra",
+    "title": "Feu",
+    "content": "Kituba: Tiya. | Lingala: Moto.",
+    "translation_fr": "Variation lexicale sur un element fondamental.",
+    "tags": ["comparative", "vocabulary", "daily-life"],
+    "source": "synthetic://comparative-kit-lin-037"
+  },
+  {
+    "id": "comparative-kit-lin-038",
+    "type": "comparative",
+    "language": "fra",
+    "title": "Maison",
+    "content": "Kituba: Ndako. | Lingala: Ndako.",
+    "translation_fr": "Nom partage avec forme identique.",
+    "tags": ["comparative", "vocabulary", "shared-form"],
+    "source": "synthetic://comparative-kit-lin-038"
+  },
+  {
+    "id": "comparative-kit-lin-039",
+    "type": "comparative",
+    "language": "fra",
+    "title": "Famille",
+    "content": "Kituba: Dibuta. | Lingala: Libota.",
+    "translation_fr": "Alternance d/l en position initiale avec meme sens.",
+    "tags": ["comparative", "vocabulary", "phonetics"],
+    "source": "synthetic://comparative-kit-lin-039"
+  },
+  {
+    "id": "comparative-kit-lin-040",
+    "type": "comparative",
+    "language": "fra",
+    "title": "Ami",
+    "content": "Kituba: Nduku. | Lingala: Moninga.",
+    "translation_fr": "Deux termes frequents pour designer un ami.",
+    "tags": ["comparative", "vocabulary", "social"],
+    "source": "synthetic://comparative-kit-lin-040"
+  },
+  {
+    "id": "comparative-kit-lin-041",
+    "type": "comparative",
+    "language": "fra",
+    "title": "Travail",
+    "content": "Kituba: Kisalu. | Lingala: Mosala.",
+    "translation_fr": "Correspondance lexicale autour de l activite professionnelle.",
+    "tags": ["comparative", "vocabulary", "work"],
+    "source": "synthetic://comparative-kit-lin-041"
+  },
+  {
+    "id": "comparative-kit-lin-042",
+    "type": "comparative",
+    "language": "fra",
+    "title": "Ecole",
+    "content": "Kituba: Sikuulu. | Lingala: Eteyelo.",
+    "translation_fr": "Emprunt adapte en kituba et forme locale en lingala.",
+    "tags": ["comparative", "vocabulary", "education"],
+    "source": "synthetic://comparative-kit-lin-042"
+  },
+  {
+    "id": "comparative-kit-lin-043",
+    "type": "comparative",
+    "language": "fra",
+    "title": "Manger",
+    "content": "Kituba: Dia. | Lingala: Lia.",
+    "translation_fr": "Alternance consonantique sur le verbe manger.",
+    "tags": ["comparative", "verbs", "food"],
+    "source": "synthetic://comparative-kit-lin-043"
+  },
+  {
+    "id": "comparative-kit-lin-044",
+    "type": "comparative",
+    "language": "fra",
+    "title": "Boire",
+    "content": "Kituba: Nuwa. | Lingala: Mela.",
+    "translation_fr": "Verbes differents selon la langue pour boire.",
+    "tags": ["comparative", "verbs", "food"],
+    "source": "synthetic://comparative-kit-lin-044"
+  },
+  {
+    "id": "comparative-kit-lin-045",
+    "type": "comparative",
+    "language": "fra",
+    "title": "Voir",
+    "content": "Kituba: Tala. | Lingala: Mona.",
+    "translation_fr": "Kituba reutilise souvent tala; lingala privilegie mona.",
+    "tags": ["comparative", "verbs", "perception"],
+    "source": "synthetic://comparative-kit-lin-045"
+  },
+  {
+    "id": "comparative-kit-lin-046",
+    "type": "comparative",
+    "language": "fra",
+    "title": "Ecouter",
+    "content": "Kituba: Wa mbote. | Lingala: Yoka malamu.",
+    "translation_fr": "Ajout d un adverbe d attention dans les deux formes.",
+    "tags": ["comparative", "verbs", "perception"],
+    "source": "synthetic://comparative-kit-lin-046"
+  },
+  {
+    "id": "comparative-kit-lin-047",
+    "type": "comparative",
+    "language": "fra",
+    "title": "Oui",
+    "content": "Kituba: Ee. | Lingala: Ee.",
+    "translation_fr": "Affirmation identique.",
+    "tags": ["comparative", "affirmation", "shared-form"],
+    "source": "synthetic://comparative-kit-lin-047"
+  },
+  {
+    "id": "comparative-kit-lin-048",
+    "type": "comparative",
+    "language": "fra",
+    "title": "Non",
+    "content": "Kituba: Ve. | Lingala: Te.",
+    "translation_fr": "Negation de base differente.",
+    "tags": ["comparative", "negation", "beginner"],
+    "source": "synthetic://comparative-kit-lin-048"
+  },
+  {
+    "id": "comparative-kit-lin-049",
+    "type": "comparative",
+    "language": "fra",
+    "title": "Qui",
+    "content": "Kituba: Nani? | Lingala: Nani?",
+    "translation_fr": "Pronom interrogatif partage.",
+    "tags": ["comparative", "question", "shared-form"],
+    "source": "synthetic://comparative-kit-lin-049"
+  },
+  {
+    "id": "comparative-kit-lin-050",
+    "type": "comparative",
+    "language": "fra",
+    "title": "Pourquoi",
+    "content": "Kituba: Sambu na nki? | Lingala: Mpo na nini?",
+    "translation_fr": "Deux tournures differentes pour introduire la cause.",
+    "tags": ["comparative", "question", "grammar"],
+    "source": "synthetic://comparative-kit-lin-050"
+  }
+]

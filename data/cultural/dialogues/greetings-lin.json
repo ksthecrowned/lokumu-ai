@@ -1,0 +1,202 @@
+[
+  {
+    "id": "dialogue-lin-greeting-001",
+    "type": "dialogue_example",
+    "language": "lin",
+    "title": "Mbote ya tongo",
+    "content": "A: Mbote mama.\nB: Mbote mwana, ozali malamu?",
+    "translation_fr": "A: Bonjour maman. B: Bonjour mon enfant, tu vas bien ?",
+    "tags": ["greeting", "lingala", "synthetic"],
+    "source": "synthetic://dialogue-lin-greeting-001"
+  },
+  {
+    "id": "dialogue-lin-greeting-002",
+    "type": "dialogue_example",
+    "language": "lin",
+    "title": "Eyano ya malamu",
+    "content": "A: Ozali malamu?\nB: Nazali malamu, matondi.",
+    "translation_fr": "A: Tu vas bien ? B: Je vais bien, merci.",
+    "tags": ["greeting", "lingala", "synthetic"],
+    "source": "synthetic://dialogue-lin-greeting-002"
+  },
+  {
+    "id": "dialogue-lin-greeting-003",
+    "type": "dialogue_example",
+    "language": "lin",
+    "title": "Boyei malamu",
+    "content": "A: Boyei malamu na ndako.\nB: Matondi mingi, nayei kotala bino.",
+    "translation_fr": "A: Bienvenue a la maison. B: Merci beaucoup, je suis venu vous voir.",
+    "tags": ["greeting", "hospitality", "lingala"],
+    "source": "synthetic://dialogue-lin-greeting-003"
+  },
+  {
+    "id": "dialogue-lin-greeting-004",
+    "type": "dialogue_example",
+    "language": "lin",
+    "title": "Na zando",
+    "content": "A: Mbote tata, sango nini?\nB: Sango malamu, yo moko?",
+    "translation_fr": "A: Bonjour papa, quelles nouvelles ? B: Bonnes nouvelles, et toi ?",
+    "tags": ["greeting", "daily-life", "lingala"],
+    "source": "synthetic://dialogue-lin-greeting-004"
+  },
+  {
+    "id": "dialogue-lin-greeting-005",
+    "type": "dialogue_example",
+    "language": "lin",
+    "title": "Bato ya pembeni",
+    "content": "A: Mbote moninga ya pembeni.\nB: Mbote, otelemi malamu lelo?",
+    "translation_fr": "A: Bonjour voisin. B: Bonjour, tu te portes bien aujourd hui ?",
+    "tags": ["greeting", "neighbors", "lingala"],
+    "source": "synthetic://dialogue-lin-greeting-005"
+  },
+  {
+    "id": "dialogue-lin-greeting-006",
+    "type": "dialogue_example",
+    "language": "lin",
+    "title": "Nzela ya limemia",
+    "content": "A: Mbote na yo, tata.\nB: Mbote na yo mpe, mwana.",
+    "translation_fr": "A: Bonjour monsieur. B: Bonjour a toi aussi, jeune.",
+    "tags": ["greeting", "formal", "lingala"],
+    "source": "synthetic://dialogue-lin-greeting-006"
+  },
+  {
+    "id": "dialogue-lin-greeting-007",
+    "type": "dialogue_example",
+    "language": "lin",
+    "title": "Sango ya libota",
+    "content": "A: Libota ezali ndenge nini?\nB: Libota nyonso ezali malamu.",
+    "translation_fr": "A: Comment va la famille ? B: Toute la famille va bien.",
+    "tags": ["greeting", "family", "lingala"],
+    "source": "synthetic://dialogue-lin-greeting-007"
+  },
+  {
+    "id": "dialogue-lin-greeting-008",
+    "type": "dialogue_example",
+    "language": "lin",
+    "title": "Likita na nzela",
+    "content": "A: Mbote, tokutani lisusu.\nB: Ee, kimia na yo.",
+    "translation_fr": "A: Bonjour, on se rencontre encore. B: Oui, paix sur toi.",
+    "tags": ["greeting", "street", "lingala"],
+    "source": "synthetic://dialogue-lin-greeting-008"
+  },
+  {
+    "id": "dialogue-lin-greeting-009",
+    "type": "dialogue_example",
+    "language": "lin",
+    "title": "Kobanda kelasi",
+    "content": "A: Mbote bana, boyei malamu?\nB: Ee, moteyi, toyeyi malamu.",
+    "translation_fr": "A: Bonjour les enfants, vous etes bien arrives ? B: Oui professeur, nous sommes bien arrives.",
+    "tags": ["greeting", "school", "lingala"],
+    "source": "synthetic://dialogue-lin-greeting-009"
+  },
+  {
+    "id": "dialogue-lin-greeting-010",
+    "type": "dialogue_example",
+    "language": "lin",
+    "title": "Kota na ndako",
+    "content": "A: Mbote, kota.\nB: Matondi, nakoti na kimia.",
+    "translation_fr": "A: Bonjour, entre. B: Merci, j entre en paix.",
+    "tags": ["greeting", "home", "lingala"],
+    "source": "synthetic://dialogue-lin-greeting-010"
+  },
+  {
+    "id": "dialogue-lin-greeting-011",
+    "type": "dialogue_example",
+    "language": "lin",
+    "title": "Moninga ya motema",
+    "content": "A: Mbote moninga!\nB: Mbote! Ozali kosala makasi?",
+    "translation_fr": "A: Salut ami ! B: Salut ! Tu travailles dur ?",
+    "tags": ["greeting", "friends", "lingala"],
+    "source": "synthetic://dialogue-lin-greeting-011"
+  },
+  {
+    "id": "dialogue-lin-greeting-012",
+    "type": "dialogue_example",
+    "language": "lin",
+    "title": "Nsima ya mobembo",
+    "content": "A: Ozwaki mobembo malamu?\nB: Ee, mobembo elekaki malamu.",
+    "translation_fr": "A: Le voyage s est bien passe ? B: Oui, le voyage s est bien passe.",
+    "tags": ["greeting", "travel", "lingala"],
+    "source": "synthetic://dialogue-lin-greeting-012"
+  },
+  {
+    "id": "dialogue-lin-greeting-013",
+    "type": "dialogue_example",
+    "language": "lin",
+    "title": "Mbote ya mpokwa",
+    "content": "A: Mbote ya mpokwa.\nB: Mbote, lala malamu ntango ekomi.",
+    "translation_fr": "A: Bonsoir. B: Bonsoir, dors bien quand l heure arrive.",
+    "tags": ["greeting", "evening", "lingala"],
+    "source": "synthetic://dialogue-lin-greeting-013"
+  },
+  {
+    "id": "dialogue-lin-greeting-014",
+    "type": "dialogue_example",
+    "language": "lin",
+    "title": "Na biro",
+    "content": "A: Mbote chef.\nB: Mbote, obongami mpo na mosala?",
+    "translation_fr": "A: Bonjour chef. B: Bonjour, es-tu pret pour le travail ?",
+    "tags": ["greeting", "work", "lingala"],
+    "source": "synthetic://dialogue-lin-greeting-014"
+  },
+  {
+    "id": "dialogue-lin-greeting-015",
+    "type": "dialogue_example",
+    "language": "lin",
+    "title": "Mbote ya lombango",
+    "content": "A: Mbote kaka.\nB: Mbote, tokende malembe.",
+    "translation_fr": "A: Juste bonjour. B: Bonjour, allons doucement.",
+    "tags": ["greeting", "short", "lingala"],
+    "source": "synthetic://dialogue-lin-greeting-015"
+  },
+  {
+    "id": "dialogue-lin-greeting-016",
+    "type": "dialogue_example",
+    "language": "lin",
+    "title": "Mituna ya bokono",
+    "content": "A: Nzoto na yo ezali malamu?\nB: Ee, nazali na makasi.",
+    "translation_fr": "A: Ton corps va bien ? B: Oui, je suis en forme.",
+    "tags": ["greeting", "health", "lingala"],
+    "source": "synthetic://dialogue-lin-greeting-016"
+  },
+  {
+    "id": "dialogue-lin-greeting-017",
+    "type": "dialogue_example",
+    "language": "lin",
+    "title": "Na libota",
+    "content": "A: Mbote ndeko ya monene.\nB: Mbote leki, ozali na kimia?",
+    "translation_fr": "A: Bonjour grand frere. B: Bonjour petit, es-tu en paix ?",
+    "tags": ["greeting", "family", "lingala"],
+    "source": "synthetic://dialogue-lin-greeting-017"
+  },
+  {
+    "id": "dialogue-lin-greeting-018",
+    "type": "dialogue_example",
+    "language": "lin",
+    "title": "Liboso ya likita",
+    "content": "A: Mbote bino nyonso.\nB: Mbote! Tokobanda?",
+    "translation_fr": "A: Bonjour a tous. B: Bonjour ! On commence ?",
+    "tags": ["greeting", "meeting", "lingala"],
+    "source": "synthetic://dialogue-lin-greeting-018"
+  },
+  {
+    "id": "dialogue-lin-greeting-019",
+    "type": "dialogue_example",
+    "language": "lin",
+    "title": "Mbote ya kimia",
+    "content": "A: Kimia na yo.\nB: Kimia na yo mpe.",
+    "translation_fr": "A: Paix sur toi. B: Paix sur toi aussi.",
+    "tags": ["greeting", "religious", "lingala"],
+    "source": "synthetic://dialogue-lin-greeting-019"
+  },
+  {
+    "id": "dialogue-lin-greeting-020",
+    "type": "dialogue_example",
+    "language": "lin",
+    "title": "Kosukisa lisolo",
+    "content": "A: Matondi mpo na lisolo.\nB: Ezali mpamba, tokomonana lisusu. Mbote!",
+    "translation_fr": "A: Merci pour la discussion. B: De rien, on se reverra. Bonjour !",
+    "tags": ["greeting", "farewell", "lingala"],
+    "source": "synthetic://dialogue-lin-greeting-020"
+  }
+]

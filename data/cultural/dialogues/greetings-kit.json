@@ -1,0 +1,202 @@
+[
+  {
+    "id": "dialogue-kit-greeting-001",
+    "type": "dialogue_example",
+    "language": "kit",
+    "title": "Salutation du matin",
+    "content": "A: Mbote mama.\nB: Mbote mwana. Nge me kwenda mbote?",
+    "translation_fr": "A: Bonjour maman. B: Bonjour mon enfant. Tu vas bien ?",
+    "tags": ["greeting", "kituba", "synthetic"],
+    "source": "synthetic://dialogue-kit-greeting-001"
+  },
+  {
+    "id": "dialogue-kit-greeting-002",
+    "type": "dialogue_example",
+    "language": "kit",
+    "title": "Reponse polie",
+    "content": "A: Nge me kwenda mbote?\nB: Ee, mono me kwenda mbote. Matondo.",
+    "translation_fr": "A: Tu vas bien ? B: Oui, je vais bien. Merci.",
+    "tags": ["greeting", "kituba", "synthetic"],
+    "source": "synthetic://dialogue-kit-greeting-002"
+  },
+  {
+    "id": "dialogue-kit-greeting-003",
+    "type": "dialogue_example",
+    "language": "kit",
+    "title": "Accueil d un visiteur",
+    "content": "A: Lenda mbote na ndako na beto.\nB: Matondo mingi, mono me kwiza sambu na nge.",
+    "translation_fr": "A: Bienvenue chez nous. B: Merci beaucoup, je suis venu te voir.",
+    "tags": ["greeting", "hospitality", "kituba"],
+    "source": "synthetic://dialogue-kit-greeting-003"
+  },
+  {
+    "id": "dialogue-kit-greeting-004",
+    "type": "dialogue_example",
+    "language": "kit",
+    "title": "Salutation au marche",
+    "content": "A: Mbote tata, mambu yina?\nB: Mambu mbote, nge mpi?",
+    "translation_fr": "A: Bonjour papa, comment vont les choses ? B: Tout va bien, et toi ?",
+    "tags": ["greeting", "daily-life", "kituba"],
+    "source": "synthetic://dialogue-kit-greeting-004"
+  },
+  {
+    "id": "dialogue-kit-greeting-005",
+    "type": "dialogue_example",
+    "language": "kit",
+    "title": "Salutation de voisinage",
+    "content": "A: Mbote mpangi, nge ke salaka mbote?\nB: Ee, mono ke salaka mbote bubu yayi.",
+    "translation_fr": "A: Bonjour voisin, tu travailles bien ? B: Oui, je travaille bien aujourd hui.",
+    "tags": ["greeting", "neighbors", "kituba"],
+    "source": "synthetic://dialogue-kit-greeting-005"
+  },
+  {
+    "id": "dialogue-kit-greeting-006",
+    "type": "dialogue_example",
+    "language": "kit",
+    "title": "Salutation formelle",
+    "content": "A: Mbote na nge, tata.\nB: Mbote na nge mpi, mwana.",
+    "translation_fr": "A: Bonjour a vous, monsieur. B: Bonjour a toi aussi, jeune.",
+    "tags": ["greeting", "formal", "kituba"],
+    "source": "synthetic://dialogue-kit-greeting-006"
+  },
+  {
+    "id": "dialogue-kit-greeting-007",
+    "type": "dialogue_example",
+    "language": "kit",
+    "title": "Demande de nouvelles",
+    "content": "A: Nsangu ya dibuta?\nB: Dibuta yonso kele mbote.",
+    "translation_fr": "A: Des nouvelles de la famille ? B: Toute la famille va bien.",
+    "tags": ["greeting", "family", "kituba"],
+    "source": "synthetic://dialogue-kit-greeting-007"
+  },
+  {
+    "id": "dialogue-kit-greeting-008",
+    "type": "dialogue_example",
+    "language": "kit",
+    "title": "Recontre de rue",
+    "content": "A: Mbote, tokutanaka diaka.\nB: Ee, kimia na nge.",
+    "translation_fr": "A: Bonjour, on se rencontre encore. B: Oui, paix sur toi.",
+    "tags": ["greeting", "street", "kituba"],
+    "source": "synthetic://dialogue-kit-greeting-008"
+  },
+  {
+    "id": "dialogue-kit-greeting-009",
+    "type": "dialogue_example",
+    "language": "kit",
+    "title": "Debut de cours",
+    "content": "A: Mbote bana, beno me kwiza mbote?\nB: Ee, mfumu, beto me kwiza mbote.",
+    "translation_fr": "A: Bonjour les enfants, vous etes bien arrives ? B: Oui, maitre, nous sommes bien arrives.",
+    "tags": ["greeting", "school", "kituba"],
+    "source": "synthetic://dialogue-kit-greeting-009"
+  },
+  {
+    "id": "dialogue-kit-greeting-010",
+    "type": "dialogue_example",
+    "language": "kit",
+    "title": "Accueil a la maison",
+    "content": "A: Mbote, kota.\nB: Matondo, mono ke kota na kimia.",
+    "translation_fr": "A: Bonjour, entre. B: Merci, j entre en paix.",
+    "tags": ["greeting", "home", "kituba"],
+    "source": "synthetic://dialogue-kit-greeting-010"
+  },
+  {
+    "id": "dialogue-kit-greeting-011",
+    "type": "dialogue_example",
+    "language": "kit",
+    "title": "Salut entre amis",
+    "content": "A: Mbote nduku!\nB: Mbote! Ntangu nyonso nge ke sala ngolo?",
+    "translation_fr": "A: Salut ami ! B: Salut ! Tu travailles dur comme toujours ?",
+    "tags": ["greeting", "friends", "kituba"],
+    "source": "synthetic://dialogue-kit-greeting-011"
+  },
+  {
+    "id": "dialogue-kit-greeting-012",
+    "type": "dialogue_example",
+    "language": "kit",
+    "title": "Apres un voyage",
+    "content": "A: Nge vutukidi mbote?\nB: Ee, nzila me kwenda mbote.",
+    "translation_fr": "A: Tu es bien revenu ? B: Oui, le voyage s est bien passe.",
+    "tags": ["greeting", "travel", "kituba"],
+    "source": "synthetic://dialogue-kit-greeting-012"
+  },
+  {
+    "id": "dialogue-kit-greeting-013",
+    "type": "dialogue_example",
+    "language": "kit",
+    "title": "Salutation du soir",
+    "content": "A: Mbote ya mpimpa.\nB: Mbote, nge lala mbote ntangu ke kwiza.",
+    "translation_fr": "A: Bonsoir. B: Bonsoir, dors bien quand l heure viendra.",
+    "tags": ["greeting", "evening", "kituba"],
+    "source": "synthetic://dialogue-kit-greeting-013"
+  },
+  {
+    "id": "dialogue-kit-greeting-014",
+    "type": "dialogue_example",
+    "language": "kit",
+    "title": "Rencontre au bureau",
+    "content": "A: Mbote chef.\nB: Mbote, nge kele tayari sambu na kisalu?",
+    "translation_fr": "A: Bonjour chef. B: Bonjour, es-tu pret pour le travail ?",
+    "tags": ["greeting", "work", "kituba"],
+    "source": "synthetic://dialogue-kit-greeting-014"
+  },
+  {
+    "id": "dialogue-kit-greeting-015",
+    "type": "dialogue_example",
+    "language": "kit",
+    "title": "Politesse rapide",
+    "content": "A: Mbote kaka.\nB: Mbote, twendi malembe.",
+    "translation_fr": "A: Juste bonjour. B: Bonjour, allons doucement.",
+    "tags": ["greeting", "short", "kituba"],
+    "source": "synthetic://dialogue-kit-greeting-015"
+  },
+  {
+    "id": "dialogue-kit-greeting-016",
+    "type": "dialogue_example",
+    "language": "kit",
+    "title": "Question de sante",
+    "content": "A: Nzutu na nge kele mbote?\nB: Ee, nzutu kele ngolo.",
+    "translation_fr": "A: Ta sante va bien ? B: Oui, mon corps est en forme.",
+    "tags": ["greeting", "health", "kituba"],
+    "source": "synthetic://dialogue-kit-greeting-016"
+  },
+  {
+    "id": "dialogue-kit-greeting-017",
+    "type": "dialogue_example",
+    "language": "kit",
+    "title": "Echange en famille",
+    "content": "A: Mbote mpangi ya nene.\nB: Mbote leki, nge me luta mpasi te?",
+    "translation_fr": "A: Bonjour grand frere. B: Bonjour petit, tu n as pas eu de difficultes ?",
+    "tags": ["greeting", "family", "kituba"],
+    "source": "synthetic://dialogue-kit-greeting-017"
+  },
+  {
+    "id": "dialogue-kit-greeting-018",
+    "type": "dialogue_example",
+    "language": "kit",
+    "title": "Salut avant reunion",
+    "content": "A: Mbote bantu nyonso.\nB: Mbote! Beto banda?",
+    "translation_fr": "A: Bonjour tout le monde. B: Bonjour ! On commence ?",
+    "tags": ["greeting", "meeting", "kituba"],
+    "source": "synthetic://dialogue-kit-greeting-018"
+  },
+  {
+    "id": "dialogue-kit-greeting-019",
+    "type": "dialogue_example",
+    "language": "kit",
+    "title": "Salutation religieuse",
+    "content": "A: Kimia na nge.\nB: Kimia na nge mpi.",
+    "translation_fr": "A: La paix soit avec toi. B: La paix soit avec toi aussi.",
+    "tags": ["greeting", "religious", "kituba"],
+    "source": "synthetic://dialogue-kit-greeting-019"
+  },
+  {
+    "id": "dialogue-kit-greeting-020",
+    "type": "dialogue_example",
+    "language": "kit",
+    "title": "Cloture cordiale",
+    "content": "A: Matondo sambu na kusolula.\nB: Kima ve, twamonana diaka. Mbote!",
+    "translation_fr": "A: Merci pour la conversation. B: De rien, on se revoit. Bonjour !",
+    "tags": ["greeting", "farewell", "kituba"],
+    "source": "synthetic://dialogue-kit-greeting-020"
+  }
+]
