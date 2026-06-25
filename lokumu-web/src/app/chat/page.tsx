@@ -8,7 +8,7 @@ export default function ChatPage() {
   const [message, setMessage] = useState("");
   const [response, setResponse] = useState("");
   const [mode, setMode] = useState<"chat" | "code">("chat");
-  const [language, setLanguage] = useState<"fr" | "en" | "lin" | "kit" | "swa">("fr");
+  const [language, setLanguage] = useState<"fr" | "en" | "lin" | "kit">("fr");
   const [isLoading, setIsLoading] = useState(false);
 
   const languageNames: Record<string, string> = {
@@ -16,11 +16,10 @@ export default function ChatPage() {
     en: "English",
     lin: "Lingála",
     kit: "Kitúba",
-    swa: "Kiswahili",
   };
 
   useEffect(() => {
-    const s = io("http://localhost:3000");
+    const s = io("http://localhost:3001");
     setSocket(s);
     return () => {
       s.disconnect();
@@ -41,8 +40,7 @@ export default function ChatPage() {
       (data: { chunk: string; done: boolean; mode: "chat" | "code" }) => {
         setResponse((prev) => prev + data.chunk);
         setMode(data.mode);
-        }
-      },
+      }
     );
   };
 

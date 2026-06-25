@@ -1,4 +1,5 @@
-import { getSystemPrompt, SupportedLanguage, SYSTEM_PROMPTS } from '../prompts/multilingual';
+import { getSystemPrompt, SYSTEM_PROMPTS } from '../prompts/multilingual';
+import { buildCulturalSystemPrompt } from '../prompts/cultural.prompt';
 
 describe('Multilingual Prompts', () => {
   it('returns French prompt by default for unknown language', () => {
@@ -23,8 +24,8 @@ describe('Multilingual Prompts', () => {
     expect(getSystemPrompt('kit')).toBe(SYSTEM_PROMPTS.kit);
   });
 
-  it('returns Swahili prompt for swa/sw', () => {
-    expect(getSystemPrompt('swa')).toBe(SYSTEM_PROMPTS.swa);
-    expect(getSystemPrompt('sw')).toBe(SYSTEM_PROMPTS.swa);
+  it('builds cultural system prompt for lin', () => {
+    expect(buildCulturalSystemPrompt('lin')).toContain('Lokumu');
+    expect(buildCulturalSystemPrompt('lin')).toContain('sans cloud');
   });
 });

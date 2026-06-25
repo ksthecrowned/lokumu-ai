@@ -1,6 +1,6 @@
 # Lokumu AI
 
-Une IA locale multilingue (FR, EN, LIN, KIT, SWA) avec double mode:
+Une IA locale multilingue (FR, EN, LIN, KIT) avec double mode:
 - **Chat Mode**: Assistant conversationnel avec RAG
 - **Code Mode**: Agent autonome de développement (CursorCLI-like)
 
@@ -50,7 +50,6 @@ bun test
 - Anglais (eng)
 - Lingala (lin)
 - Kituba (kit)
-- Swahili (swa)
 
 ## Configuration
 Copiez `.env.example` vers `.env` et configurez:
