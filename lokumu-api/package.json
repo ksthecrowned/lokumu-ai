@@ -19,7 +19,13 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "seed": "ts-node prisma/seed/index.ts",
-    "ingest:cultural": "ts-node scripts/ingest-cultural.ts"
+    "ingest:cultural": "ts-node scripts/ingest-cultural.ts",
+    "parse:eliet": "ts-node scripts/parse-eliet-html.ts",
+    "corpus:generate": "ts-node scripts/generate-corpus-seeds.ts",
+    "training:export": "ts-node scripts/export-training-dataset.ts",
+    "corpus:ingest-all": "npm run parse:eliet && npm run corpus:generate && npm run ingest:cultural",
+    "db:pgvector": "ts-node scripts/enable-pgvector.ts",
+    "db:backfill-vectors": "ts-node scripts/backfill-embedding-vec.ts"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",
