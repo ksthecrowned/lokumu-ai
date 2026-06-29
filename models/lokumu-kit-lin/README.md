@@ -1,10 +1,26 @@
 # lokumu-kit-lin
 
-Ollama model definition for Lokumu Phase 2 conversational assistant (Kituba / Lingala).
+Ollama model definition and **Hugging Face** training/inference guide for Lokumu Phase 2.
 
-The checked-in `Modelfile` uses `qwen2.5:7b` as the base until a LoRA adapter is fine-tuned externally and merged. At runtime the API prefers `lokumu-kit-lin:latest` and falls back to `qwen2.5:7b` if the custom model is missing or times out.
+## Phase A — Quick test with Hugging Face Inference (no GPU)
 
-## Quick start (demo machine)
+Set in `lokumu-api/.env`:
+
+```env
+LLM_PROVIDER=hf
+HF_TOKEN=hf_xxxxxxxx
+HF_MODEL_ID=Svngoku/aya-23-8b-afrimmlu-lin
+```
+
+Restart the API. Lokumu uses the [HF Inference API](https://huggingface.co/docs/api-inference) for chat; RAG and PostgreSQL stay local.
+
+See [Phase A E2E checklist](../../docs/superpowers/plans/2026-06-26-huggingface-phase-a-e2e.md).
+
+Design spec: [2026-06-26-huggingface-training-inference-design.md](../../docs/superpowers/specs/2026-06-26-huggingface-training-inference-design.md).
+
+---
+
+## Offline demo (Ollama)
 
 ```bash
 # From repo root

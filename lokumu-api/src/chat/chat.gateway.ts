@@ -51,10 +51,7 @@ export class ChatGateway {
 
       return result;
     } catch (error) {
-      const message =
-        error instanceof Error && error.message === 'ollama_unavailable'
-          ? 'Le modele met trop de temps a repondre. Reessayez dans un instant, ou utilisez une question du corpus (proverbe, salutation).'
-          : 'Une erreur est survenue. Reessayez.';
+      const message = this.resolveChatErrorMessage(error);
 
       client.emit('stream', {
         chunk: message,
@@ -96,5 +93,21 @@ export class ChatGateway {
       status: dialogue.status,
     });
     return dialogue;
+  }
+
+  private resolveChatErrorMessage(error: unknown): string {
+    if (!(error instanceof Error)) {
+      return 'Une erreur est survenue. Reessayez.';
+    }
+
+    if (error.message.startsWith('hf_unavailable')) {
+      return 'Le modele Hugging Face est indisponible. Verifiez HF_TOKEN et HF_MODEL_ID dans lokumu-api/.env.';
+    }
+
+    if (error.message === 'ollama_unavailable') {
+      return 'Le modele met trop de temps a repondre. Reessayez dans un instant, ou utilisez une question du corpus (proverbe, salutation).';
+    }
+
+    return 'Une erreur est survenue. Reessayez.';
   }
 }

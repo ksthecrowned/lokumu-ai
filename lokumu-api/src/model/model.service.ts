@@ -1,4 +1,5 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import { HfInferenceClient } from './hf-inference.client';
 import { OllamaClient, OllamaMessage } from './ollama.client';
 
 @Injectable()
@@ -10,12 +11,45 @@ export class ModelService implements OnModuleInit {
     process.env.OLLAMA_FALLBACK_MODEL ?? 'qwen2.5-coder:1.5b';
 
   async onModuleInit() {
+    if (this.isHfProvider()) {
+      if (!process.env.HF_TOKEN?.trim()) {
+        this.logger.warn(
+          'LLM_PROVIDER=hf but HF_TOKEN is missing. Set HF_TOKEN in .env.',
+        );
+      }
+      return;
+    }
+
     const available = await this.ollama.isAvailable();
     if (!available) {
       this.logger.warn(
         'Ollama is unavailable on startup. Expected at OLLAMA_BASE_URL.',
       );
     }
+  }
+
+  getProvider(): 'hf' | 'ollama' {
+    return this.isHfProvider() ? 'hf' : 'ollama';
+  }
+
+  private isHfProvider(): boolean {
+    return (process.env.LLM_PROVIDER ?? 'ollama').toLowerCase() === 'hf';
+  }
+
+  private shouldFallbackToOllama(): boolean {
+    return process.env.HF_FALLBACK_TO_OLLAMA === 'true';
+  }
+
+  private createHfClient(): HfInferenceClient {
+    const token = process.env.HF_TOKEN?.trim();
+    if (!token) {
+      throw new Error('hf_unavailable:missing_token');
+    }
+
+    const modelId =
+      process.env.HF_MODEL_ID?.trim() ?? 'Svngoku/aya-23-8b-afrimmlu-lin';
+
+    return new HfInferenceClient({ token, modelId });
   }
 
   private async resolveModel(preferred?: string): Promise<string> {
@@ -44,6 +78,13 @@ export class ModelService implements OnModuleInit {
     }
     messages.push({ role: 'user', content: prompt });
 
+    if (this.isHfProvider()) {
+      return this.chatWithHistory(messages, {
+        temperature: options.temperature,
+        model: options.model,
+      });
+    }
+
     const model = await this.resolveModel(options.model);
 
     try {
@@ -69,6 +110,34 @@ export class ModelService implements OnModuleInit {
   }
 
   async chatWithHistory(
+    messages: OllamaMessage[],
+    options: { temperature?: number; model?: string } = {},
+  ): Promise<string> {
+    if (this.isHfProvider()) {
+      try {
+        return await this.createHfClient().chat(messages, {
+          temperature: options.temperature ?? 0.7,
+        });
+      } catch (error) {
+        if (this.shouldFallbackToOllama()) {
+          this.logger.warn(
+            'HF inference failed, falling back to Ollama',
+            error as Error,
+          );
+          return this.chatWithHistoryOllama(messages, options);
+        }
+        this.logger.error('HF inference failed', error as Error);
+        if (error instanceof Error && error.message.startsWith('hf_unavailable')) {
+          throw error;
+        }
+        throw new Error('hf_unavailable');
+      }
+    }
+
+    return this.chatWithHistoryOllama(messages, options);
+  }
+
+  private async chatWithHistoryOllama(
     messages: OllamaMessage[],
     options: { temperature?: number; model?: string } = {},
   ): Promise<string> {
@@ -112,6 +181,12 @@ export class ModelService implements OnModuleInit {
       systemPrompt?: string;
     } = {},
   ): AsyncGenerator<string> {
+    if (this.isHfProvider()) {
+      const response = await this.generate(prompt, options);
+      yield response;
+      return;
+    }
+
     const messages: OllamaMessage[] = [];
     if (options.systemPrompt) {
       messages.push({ role: 'system', content: options.systemPrompt });
@@ -127,6 +202,12 @@ export class ModelService implements OnModuleInit {
     messages: OllamaMessage[],
     options: { temperature?: number; model?: string } = {},
   ): AsyncGenerator<string> {
+    if (this.isHfProvider()) {
+      const response = await this.chatWithHistory(messages, options);
+      yield response;
+      return;
+    }
+
     const model = await this.resolveModel(options.model);
     yield* this.ollama.chatStream(model, messages, {
       temperature: options.temperature ?? 0.7,
@@ -138,6 +219,29 @@ export class ModelService implements OnModuleInit {
   }
 
   async isAvailable(): Promise<boolean> {
+    if (this.isHfProvider()) {
+      return Boolean(process.env.HF_TOKEN?.trim());
+    }
     return this.ollama.isAvailable();
+  }
+
+  getLlmStatus(): {
+    provider: 'hf' | 'ollama';
+    configured: boolean;
+    model?: string;
+  } {
+    if (this.isHfProvider()) {
+      return {
+        provider: 'hf',
+        configured: Boolean(process.env.HF_TOKEN?.trim()),
+        model: process.env.HF_MODEL_ID?.trim(),
+      };
+    }
+
+    return {
+      provider: 'ollama',
+      configured: true,
+      model: this.primaryModel,
+    };
   }
 }

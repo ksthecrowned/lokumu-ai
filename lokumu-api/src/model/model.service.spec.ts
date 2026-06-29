@@ -1,8 +1,12 @@
 import { ModelService } from './model.service';
 import { OllamaClient } from './ollama.client';
+import { HfInferenceClient } from './hf-inference.client';
 
 describe('ModelService', () => {
+  const originalEnv = process.env;
+
   afterEach(() => {
+    process.env = { ...originalEnv };
     jest.restoreAllMocks();
   });
 
@@ -78,5 +82,22 @@ describe('ModelService', () => {
       messages,
       expect.objectContaining({ temperature: 0.7 }),
     );
+  });
+
+  it('uses HF client when LLM_PROVIDER=hf', async () => {
+    process.env.LLM_PROVIDER = 'hf';
+    process.env.HF_TOKEN = 'hf_test';
+    process.env.HF_MODEL_ID = 'Svngoku/aya-23-8b-afrimmlu-lin';
+
+    const hfChat = jest.fn().mockResolvedValue('Mbote na yo!');
+    jest.spyOn(HfInferenceClient.prototype, 'chat').mockImplementation(hfChat);
+
+    const service = new ModelService();
+    const result = await service.chatWithHistory([
+      { role: 'user', content: 'Mbote' },
+    ]);
+
+    expect(result).toBe('Mbote na yo!');
+    expect(hfChat).toHaveBeenCalled();
   });
 });

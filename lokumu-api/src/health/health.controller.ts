@@ -13,7 +13,8 @@ export class HealthController {
 
   @Get()
   async check() {
-    const ollama = await this.modelService.isAvailable();
+    const llm = this.modelService.getLlmStatus();
+    const llmAvailable = await this.modelService.isAvailable();
     let database = false;
     let chunksCount = 0;
 
@@ -27,11 +28,11 @@ export class HealthController {
 
     const embeddings = this.ragService.isModelLoaded();
     const status =
-      ollama && database ? (embeddings ? 'ok' : 'degraded') : 'down';
+      llmAvailable && database ? (embeddings ? 'ok' : 'degraded') : 'down';
 
     return {
       status,
-      ollama,
+      llm: { ...llm, available: llmAvailable },
       database,
       embeddings,
       chunksCount,
