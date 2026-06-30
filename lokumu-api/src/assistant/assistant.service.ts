@@ -9,10 +9,28 @@ import {
 } from './cultural-response';
 import {
   classifyQueryIntent,
+  isGreetingConversationQuery,
   resolveRagLimit,
+  resolveReplyLanguage,
   resolveSearchLanguage,
 } from './cultural-router';
 import { buildOllamaMessages, formatRagContext } from './prompt-builder';
+
+function filterGreetingSources(
+  sources: RagSearchResult[],
+): RagSearchResult[] {
+  const preferred = sources.filter((item) => {
+    const metadata =
+      typeof item.metadata === 'object' &&
+      item.metadata &&
+      !Array.isArray(item.metadata)
+        ? (item.metadata as Record<string, unknown>)
+        : {};
+    const type = String(metadata.type ?? '');
+    return ['greeting', 'dialogue', 'dialogue_example'].includes(type);
+  });
+  return preferred.length > 0 ? preferred : sources.slice(0, 3);
+}
 
 @Injectable()
 export class AssistantService {
@@ -51,6 +69,8 @@ export class AssistantService {
       await this.conversationService.maybeSetTitle(convId, prompt);
     }
 
+    const intent = classifyQueryIntent(prompt);
+    const replyLang = resolveReplyLanguage(prompt, lang);
     const limit = resolveRagLimit(prompt);
     const searchLanguage = resolveSearchLanguage(prompt, lang);
     const rawMatches = await this.ragService.search({
@@ -58,10 +78,32 @@ export class AssistantService {
       language: searchLanguage,
       limit,
     });
-    const intent = classifyQueryIntent(prompt);
-    const sources = this.dedupeSources(
+    let sources = this.dedupeSources(
       this.ragService.rerankByMetadata(rawMatches, intent),
     );
+    if (intent === 'greeting') {
+      sources = filterGreetingSources(sources);
+    }
+
+    if (intent === 'greeting' && isGreetingConversationQuery(prompt)) {
+      const grounded = buildGroundedResponse(sources, prompt, replyLang);
+      if (grounded) {
+        const cited = grounded.source ? [grounded.source] : [];
+        const messageId = await this.conversationService.appendMessage(
+          convId,
+          'assistant',
+          grounded.response,
+          replyLang,
+          cited.map((source) => source.id),
+        );
+        return this.formatResult(
+          grounded.response,
+          cited,
+          convId,
+          messageId,
+        );
+      }
+    }
 
     const top = sources[0];
     if (top && top.score >= 0.85) {
@@ -85,10 +127,11 @@ export class AssistantService {
     );
     const ragContext = formatRagContext(sources.slice(0, limit));
     const messages = buildOllamaMessages({
-      language: lang,
+      language: replyLang,
       history,
       ragContext,
       userPrompt: prompt,
+      intent,
     });
 
     let response: string;
@@ -98,7 +141,8 @@ export class AssistantService {
       response = buildDemoFallbackResponse(lang, prompt);
     }
 
-    const citedSources = sources.slice(0, 3);
+    const citedSources =
+      intent === 'greeting' ? sources.slice(0, 1) : sources.slice(0, 3);
     const messageId = await this.conversationService.appendMessage(
       convId,
       'assistant',

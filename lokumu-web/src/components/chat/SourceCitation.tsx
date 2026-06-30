@@ -12,16 +12,21 @@ type SourceCitationProps = {
 
 export function SourceCitation({ source }: SourceCitationProps) {
   return (
-    <div className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-700">
-      <div className="font-medium text-slate-900">{source.title}</div>
-      <div className="mt-1 flex items-center gap-2">
-        <span className="rounded bg-slate-100 px-2 py-0.5">{source.type}</span>
+    <div
+      className="inline-flex max-w-full flex-col rounded-xl border border-white/10 bg-[#2f2f2f]/80 px-3 py-2 text-left text-xs text-zinc-400"
+      title={source.title}
+    >
+      <span className="truncate font-medium text-zinc-300">{source.title}</span>
+      <span className="mt-1 flex flex-wrap items-center gap-1.5">
+        <span className="rounded-md bg-white/5 px-1.5 py-0.5 text-[10px] uppercase tracking-wide text-zinc-500">
+          {source.type}
+        </span>
         {source.community ? (
-          <span className="rounded bg-emerald-100 px-2 py-0.5 text-emerald-700">
-            Community
+          <span className="rounded-md bg-emerald-500/15 px-1.5 py-0.5 text-[10px] text-emerald-400">
+            Communaute
           </span>
         ) : null}
-      </div>
+      </span>
     </div>
   );
 }

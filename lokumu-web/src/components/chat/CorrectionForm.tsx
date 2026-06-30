@@ -35,7 +35,7 @@ export function CorrectionForm({ onSubmit }: CorrectionFormProps) {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="text-xs font-medium text-lokumu-primary underline decoration-dotted"
+        className="text-xs text-zinc-500 transition hover:text-zinc-300"
       >
         Corriger cette reponse
       </button>
@@ -43,12 +43,15 @@ export function CorrectionForm({ onSubmit }: CorrectionFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-2 rounded-lg border border-slate-200 bg-slate-50 p-3">
+    <form
+      onSubmit={handleSubmit}
+      className="space-y-2 rounded-xl border border-white/10 bg-[#2f2f2f] p-3"
+    >
       <textarea
         value={correctedAnswer}
         onChange={(event) => setCorrectedAnswer(event.target.value)}
         placeholder="Votre correction"
-        className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm outline-none ring-lokumu-primary focus:ring-2"
+        className="w-full rounded-lg border border-white/10 bg-[#212121] px-3 py-2 text-sm text-zinc-100 outline-none ring-lokumu-primary placeholder:text-zinc-600 focus:ring-2"
         rows={3}
       />
       <input
@@ -56,20 +59,20 @@ export function CorrectionForm({ onSubmit }: CorrectionFormProps) {
         value={contributorNote}
         onChange={(event) => setContributorNote(event.target.value)}
         placeholder="Note optionnelle"
-        className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm outline-none ring-lokumu-primary focus:ring-2"
+        className="w-full rounded-lg border border-white/10 bg-[#212121] px-3 py-2 text-sm text-zinc-100 outline-none ring-lokumu-primary placeholder:text-zinc-600 focus:ring-2"
       />
       <div className="flex gap-2">
         <button
           type="submit"
           disabled={isSubmitting}
-          className="rounded-md bg-lokumu-primary px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-60"
+          className="rounded-lg bg-zinc-100 px-3 py-1.5 text-xs font-semibold text-zinc-900 disabled:opacity-60"
         >
           {isSubmitting ? 'Envoi...' : 'Envoyer'}
         </button>
         <button
           type="button"
           onClick={() => setOpen(false)}
-          className="rounded-md border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700"
+          className="rounded-lg border border-white/10 px-3 py-1.5 text-xs font-semibold text-zinc-400"
         >
           Annuler
         </button>

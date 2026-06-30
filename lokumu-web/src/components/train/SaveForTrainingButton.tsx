@@ -67,37 +67,37 @@ export function SaveForTrainingButton({
   };
 
   return (
-    <section className="mt-3 space-y-2 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
-      <div className="flex items-center justify-between gap-3">
-        <p className="text-xs text-slate-600">
-          Enregistrer cette conversation pour enrichir le corpus de training.
+    <section className="mb-4 space-y-2 rounded-xl border border-white/10 bg-[#2f2f2f]/50 p-3">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <p className="text-xs text-zinc-500">
+          Enregistrer cette conversation pour le corpus de training.
         </p>
         <button
           type="button"
           onClick={() => setOpen(true)}
-          className="shrink-0 rounded-lg border border-lokumu-primary px-3 py-1.5 text-xs font-semibold text-lokumu-primary"
+          className="shrink-0 rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-medium text-zinc-300 transition hover:bg-white/10 hover:text-zinc-100"
         >
-          Enregistrer pour l&apos;entrainement
+          Enregistrer
         </button>
       </div>
 
       {notice ? (
-        <p className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs text-emerald-800">
+        <p className="rounded-lg border border-emerald-500/20 bg-emerald-500/10 px-3 py-2 text-xs text-emerald-300">
           {notice}
         </p>
       ) : null}
 
       {open ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4">
-          <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-slate-50 p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm">
+          <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl border border-white/10 bg-[#2f2f2f] p-4 shadow-2xl">
             <div className="mb-3 flex items-center justify-between gap-3">
-              <p className="text-sm font-semibold text-slate-900">
+              <p className="text-sm font-semibold text-zinc-100">
                 Sauvegarder cette conversation
               </p>
               <button
                 type="button"
                 onClick={() => setOpen(false)}
-                className="rounded-lg border border-slate-300 px-2.5 py-1 text-xs font-semibold text-slate-700"
+                className="rounded-lg border border-white/10 px-2.5 py-1 text-xs font-medium text-zinc-400 hover:text-zinc-200"
               >
                 Fermer
               </button>
@@ -111,7 +111,7 @@ export function SaveForTrainingButton({
               onSubmit={handleSubmit}
             />
             {isSubmitting ? (
-              <p className="mt-2 text-xs text-slate-500">
+              <p className="mt-2 text-xs text-zinc-500">
                 Transmission en cours via websocket...
               </p>
             ) : null}

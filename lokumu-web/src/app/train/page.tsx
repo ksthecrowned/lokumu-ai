@@ -2,8 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { DemoHeader } from "../../components/demo/DemoHeader";
-import { OfflineBadge } from "../../components/demo/OfflineBadge";
+import { ChatHeader } from "../../components/chat/ChatHeader";
 import {
   TrainingDialogueForm,
   TrainingDialoguePayload,
@@ -62,31 +61,34 @@ export default function TrainPage() {
   }, []);
 
   return (
-    <main className="mx-auto flex min-h-dvh max-w-3xl flex-col bg-slate-50">
-      <header className="shrink-0 border-b border-slate-200 bg-white px-4 py-3">
-        <div className="flex items-center justify-between gap-3">
-          <DemoHeader language={uiLanguage} onLanguageChange={setUiLanguage} />
-          <OfflineBadge />
-        </div>
-      </header>
+    <div className="flex min-h-dvh flex-col bg-[#212121] text-zinc-100">
+      <ChatHeader
+        language={uiLanguage}
+        onLanguageChange={setUiLanguage}
+        onNewChat={() => {}}
+        title="Entrainement"
+      />
 
       <section className="flex-1 px-4 py-6">
         <div className="mx-auto w-full max-w-2xl space-y-4">
-          <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-            <p className="text-lg font-semibold text-slate-900">Contribuer un dialogue</p>
-            <p className="mt-1 text-sm text-slate-600">
+          <div className="rounded-2xl border border-white/10 bg-[#2f2f2f] p-4">
+            <p className="text-lg font-semibold text-zinc-100">Contribuer un dialogue</p>
+            <p className="mt-1 text-sm text-zinc-400">
               Ajoutez un echange Kituba ou Lingala pour ameliorer les donnees de
               training de Lokumu.
             </p>
             <div className="mt-3 flex items-center gap-3 text-xs">
-              <Link className="font-semibold text-lokumu-primary underline decoration-dotted" href="/chat">
+              <Link
+                className="font-medium text-lokumu-primary hover:underline"
+                href="/chat"
+              >
                 Retour au chat
               </Link>
             </div>
           </div>
 
           {notice ? (
-            <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
+            <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-3 py-2 text-sm text-emerald-300">
               {notice}
             </div>
           ) : null}
@@ -94,10 +96,10 @@ export default function TrainPage() {
           <TrainingDialogueForm onSubmit={submitTrainingDialogue} />
 
           {isSubmitting ? (
-            <p className="text-xs text-slate-500">Transmission en cours via websocket...</p>
+            <p className="text-xs text-zinc-500">Transmission en cours via websocket...</p>
           ) : null}
         </div>
       </section>
-    </main>
+    </div>
   );
 }

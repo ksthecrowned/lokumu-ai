@@ -2,9 +2,9 @@ import type { Metadata } from 'next';
 import '../styles/globals.css';
 
 export const metadata: Metadata = {
-  title: 'Lokumu Cultural Assistant',
+  title: 'Lokumu — Assistant culturel',
   description:
-    'Assistant culturel local en francais, anglais, lingala et kituba.',
+    'Assistant culturel congolais en francais, anglais, lingala et kituba.',
 };
 
 export default function RootLayout({
@@ -13,8 +13,8 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
-      <body>{children}</body>
+    <html lang="fr" className="dark">
+      <body className="bg-[#212121] text-zinc-100 antialiased">{children}</body>
     </html>
   )
 }

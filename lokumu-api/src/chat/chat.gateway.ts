@@ -101,6 +101,9 @@ export class ChatGateway {
     }
 
     if (error.message.startsWith('hf_unavailable')) {
+      if (error.message.includes('model_not_supported')) {
+        return 'Ce modele HF n est pas disponible sur Inference Providers. Utilisez Qwen/Qwen2.5-7B-Instruct dans HF_MODEL_ID, ou deployez un Endpoint dedie pour les modeles communautaires.';
+      }
       return 'Le modele Hugging Face est indisponible. Verifiez HF_TOKEN et HF_MODEL_ID dans lokumu-api/.env.';
     }
 

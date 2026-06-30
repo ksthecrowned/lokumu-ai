@@ -2,11 +2,20 @@ import { OllamaMessage } from '../model/ollama.client';
 import { getSystemPrompt } from '../prompts/multilingual';
 import { RagSearchResult } from '../rag/rag.service';
 import { InternalLanguage } from '../shared/i18n/languages';
+import { QueryIntent } from './cultural-router';
+
+const GREETING_CONVERSATION_HINT =
+  'L utilisateur te salue ou demande des nouvelles. Reponds en 1 ou 2 phrases, dans la MEME langue que son message (lingala ou kituba), comme un interlocuteur poli. Ne donne pas de cours de grammaire ni d explication en francais sauf si on te le demande.';
 
 export function buildConversationalSystemPrompt(
   language: InternalLanguage,
+  intent?: QueryIntent,
 ): string {
-  return getSystemPrompt(language);
+  const base = getSystemPrompt(language);
+  if (intent === 'greeting') {
+    return `${base}\n\n${GREETING_CONVERSATION_HINT}`;
+  }
+  return base;
 }
 
 export function formatRagContext(chunks: RagSearchResult[]): string {
@@ -33,8 +42,9 @@ export function buildOllamaMessages(input: {
   history: MessageTurn[];
   ragContext: string;
   userPrompt: string;
+  intent?: QueryIntent;
 }): OllamaMessage[] {
-  const system = buildConversationalSystemPrompt(input.language);
+  const system = buildConversationalSystemPrompt(input.language, input.intent);
   const messages: OllamaMessage[] = [{ role: 'system', content: system }];
 
   if (input.ragContext) {

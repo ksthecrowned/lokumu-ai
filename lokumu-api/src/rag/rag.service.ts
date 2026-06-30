@@ -247,7 +247,7 @@ export class RagService implements OnModuleInit, OnModuleDestroy {
     intent: 'greeting' | 'translation' | 'grammar' | 'proverb' | 'general',
   ): RagSearchResult[] {
     const typeBoost: Record<string, string[]> = {
-      greeting: ['dialogue_example', 'greeting'],
+      greeting: ['dialogue_example', 'dialogue', 'greeting'],
       translation: ['lexicon', 'grammar', 'comparative'],
       grammar: ['grammar'],
       proverb: ['proverb', 'cultural_note'],

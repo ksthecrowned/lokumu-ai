@@ -1,6 +1,10 @@
 import { RagSearchResult } from '../rag/rag.service';
 import { InternalLanguage } from '../shared/i18n/languages';
-import { isSimpleGreetingQuery } from './cultural-router';
+import {
+  isGreetingConversationQuery,
+  isSimpleGreetingQuery,
+  resolveReplyLanguage,
+} from './cultural-router';
 
 function readMetadata(item: RagSearchResult): Record<string, unknown> {
   if (
@@ -204,6 +208,52 @@ function formatSimpleGreeting(
   return { response, source: null };
 }
 
+function isGreetingCorpusType(type: string): boolean {
+  return ['greeting', 'dialogue', 'dialogue_example'].includes(type);
+}
+
+function pickGreetingSource(
+  sources: RagSearchResult[],
+): RagSearchResult | null {
+  const pool = sources.filter((item) =>
+    isGreetingCorpusType(String(readMetadata(item).type ?? '')),
+  );
+  if (pool.length === 0) return sources[0] ?? null;
+
+  const wellness = pool.find((item) =>
+    /nazali malamu|me kwenda mbote|malamu/i.test(item.content),
+  );
+  return wellness ?? pool[0];
+}
+
+export function formatGreetingConversationResponse(
+  prompt: string,
+  replyLanguage: InternalLanguage,
+): string {
+  const asksWellness =
+    /ozali malamu|malamu|sango nini|kwenda mbote|comment (ca )?va|how are you|ca va/i.test(
+      prompt,
+    );
+
+  if (replyLanguage === 'kit') {
+    if (asksWellness) {
+      return 'Mbote! Mono me kwenda mbote. Nge kele mbote ve?';
+    }
+    return 'Mbote! Sango nini?';
+  }
+
+  if (replyLanguage === 'lin' || replyLanguage === 'fra' || replyLanguage === 'eng') {
+    if (asksWellness) {
+      return 'Mbote! Nazali malamu, matondo. Na yo, ozali malamu?';
+    }
+    return 'Mbote na yo! Sango nini?';
+  }
+
+  return asksWellness
+    ? 'Mbote! Nazali malamu. Na yo, ozali malamu?'
+    : 'Mbote na yo!';
+}
+
 export function formatGroundedProverbResponse(
   source: RagSearchResult,
   responseLanguage: InternalLanguage,
@@ -326,6 +376,14 @@ export function buildGroundedResponse(
 ): GroundedCulturalResult | null {
   if (isSimpleGreetingQuery(prompt)) {
     return formatSimpleGreeting(responseLanguage);
+  }
+
+  if (isGreetingConversationQuery(prompt)) {
+    const replyLanguage = resolveReplyLanguage(prompt, responseLanguage);
+    return {
+      source: pickGreetingSource(sources),
+      response: formatGreetingConversationResponse(prompt, replyLanguage),
+    };
   }
 
   if (sources.length === 0) return null;

@@ -3,7 +3,7 @@
 - [ ] Set in `lokumu-api/.env`:
   - `LLM_PROVIDER=hf`
   - `HF_TOKEN=hf_...` (read token from huggingface.co/settings/tokens)
-  - `HF_MODEL_ID=Svngoku/aya-23-8b-afrimmlu-lin`
+  - `HF_MODEL_ID=Qwen/Qwen2.5-7B-Instruct` (router-supported; community LoRAs like `Svngoku/aya-23-8b-afrimmlu-lin` need a dedicated Endpoint)
 - [ ] `./start-demo.sh`
 - [ ] `GET http://localhost:7001/health` → `llm.provider === "hf"` and `llm.available === true`
 - [ ] Chat at `http://localhost:7000/chat`: « Mbote, ozali malamu? » → Lingala response

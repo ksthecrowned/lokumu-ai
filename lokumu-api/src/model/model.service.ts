@@ -47,7 +47,7 @@ export class ModelService implements OnModuleInit {
     }
 
     const modelId =
-      process.env.HF_MODEL_ID?.trim() ?? 'Svngoku/aya-23-8b-afrimmlu-lin';
+      process.env.HF_MODEL_ID?.trim() ?? 'Qwen/Qwen2.5-7B-Instruct';
 
     return new HfInferenceClient({ token, modelId });
   }

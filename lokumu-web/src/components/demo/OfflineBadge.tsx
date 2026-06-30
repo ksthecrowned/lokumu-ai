@@ -4,9 +4,9 @@ import { useEffect, useState } from 'react';
 import { fetchHealth, HealthStatus } from '../../lib/api';
 
 const STATUS_STYLES: Record<HealthStatus['status'], string> = {
-  ok: 'bg-emerald-100 text-emerald-800',
-  degraded: 'bg-amber-100 text-amber-800',
-  down: 'bg-red-100 text-red-800',
+  ok: 'bg-emerald-500/15 text-emerald-400',
+  degraded: 'bg-amber-500/15 text-amber-400',
+  down: 'bg-red-500/15 text-red-400',
 };
 
 export function OfflineBadge() {
@@ -35,22 +35,22 @@ export function OfflineBadge() {
   const status = health?.status ?? 'down';
   const label =
     status === 'ok'
-      ? 'Local'
+      ? 'En ligne'
       : status === 'degraded'
-        ? 'Dégradé'
+        ? 'Degrade'
         : 'Hors ligne';
 
   return (
     <span
-      className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium ${STATUS_STYLES[status]}`}
+      className={`inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-[10px] font-medium sm:text-xs ${STATUS_STYLES[status]}`}
       title={
         status === 'down'
-          ? 'API injoignable — vérifiez que lokumu-api tourne sur le port 7001'
+          ? 'API injoignable — verifiez que lokumu-api tourne sur le port 7001'
           : undefined
       }
     >
       <span className="h-1.5 w-1.5 rounded-full bg-current" />
-      {label}
+      <span className="hidden sm:inline">{label}</span>
     </span>
   );
 }

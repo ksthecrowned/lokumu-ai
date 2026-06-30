@@ -18,6 +18,9 @@ type ChatWindowProps = {
 
 export function ChatWindow({ messages, isTyping }: ChatWindowProps) {
   const bottomRef = useRef<HTMLDivElement | null>(null);
+  const lastMessage = messages[messages.length - 1];
+  const streamingAssistant =
+    isTyping && lastMessage?.role === 'assistant' && lastMessage.content.trim().length > 0;
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
@@ -25,16 +28,29 @@ export function ChatWindow({ messages, isTyping }: ChatWindowProps) {
 
   const lastAssistant = [...messages].reverse().find((m) => m.role === 'assistant');
   const waitingForReply =
-    isTyping && (!lastAssistant?.content.trim() || lastAssistant.content === 'Lokumu prepare la reponse...');
+    isTyping && !lastAssistant?.content.trim();
 
   return (
-    <div className="space-y-5 pb-2">
-      {messages.map((message) => {
+    <div className="mx-auto w-full max-w-3xl px-3 pb-4 sm:px-4">
+      {messages.map((message, index) => {
+        const isLast = index === messages.length - 1;
         const displayContent =
           message.content.trim() ||
-          (message.role === 'assistant' && isTyping
-            ? 'Lokumu prepare la reponse...'
-            : '');
+          (message.role === 'assistant' && isTyping && isLast ? '' : '');
+
+        if (!displayContent && message.role === 'assistant' && !isLast) {
+          return null;
+        }
+
+        if (!displayContent && waitingForReply && isLast) {
+          return (
+            <div key={message.id} className="flex gap-3 py-3">
+              <TypingIndicator />
+            </div>
+          );
+        }
+
+        if (!displayContent) return null;
 
         return (
           <MessageBubble
@@ -43,15 +59,16 @@ export function ChatWindow({ messages, isTyping }: ChatWindowProps) {
             content={displayContent}
             sources={message.sources}
             correctionSlot={message.correctionSlot}
+            isStreaming={streamingAssistant && isLast}
           />
         );
       })}
-      {waitingForReply ? (
-        <div className="flex justify-start pl-1">
+      {waitingForReply && lastMessage?.role !== 'assistant' ? (
+        <div className="flex gap-3 py-3">
           <TypingIndicator />
         </div>
       ) : null}
-      <div ref={bottomRef} />
+      <div ref={bottomRef} className="h-1" />
     </div>
   );
 }

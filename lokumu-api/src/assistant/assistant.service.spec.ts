@@ -110,4 +110,45 @@ describe('AssistantService', () => {
     expect(modelService.chatWithHistory).toHaveBeenCalled();
     expect(result.response).toContain('assistant culturel congolais');
   });
+
+  it('replies in lingala for Mbote ozali malamu without calling the LLM', async () => {
+    ragService.search.mockResolvedValueOnce([
+      {
+        id: 'g2',
+        content: 'Nazali malamu.',
+        metadata: {
+          title: 'Reponse tout va bien',
+          type: 'greeting',
+        },
+        language: 'lin',
+        score: 0.7,
+        community: false,
+      },
+      {
+        id: 'grammar-1',
+        content: 'Mbote signifie bonjour...',
+        metadata: { title: 'grammar', type: 'grammar' },
+        language: 'fra',
+        score: 0.9,
+        community: false,
+      },
+    ]);
+    const service = new AssistantService(
+      ragService as any,
+      conversationService as any,
+      modelService as any,
+    );
+
+    const result = await service.processRequest(
+      'Mbote, ozali malamu?',
+      'fra',
+      'conv-1',
+    );
+
+    expect(modelService.chatWithHistory).not.toHaveBeenCalled();
+    expect(result.response).toContain('Nazali malamu');
+    expect(result.response).not.toContain('signifie');
+    expect(result.sources).toHaveLength(1);
+    expect(result.sources[0].type).toBe('greeting');
+  });
 });

@@ -1,0 +1,6 @@
+# Optional — only if you use: npm run training:autotrain -- --python
+# Requires Python 3.11 or 3.12 (NOT 3.13 on Windows: sentencepiece fails to build).
+#
+# Default launcher uses TypeScript + HF Space API (no Python install needed).
+autotrain-advanced>=0.8.36
+huggingface_hub>=0.26.0

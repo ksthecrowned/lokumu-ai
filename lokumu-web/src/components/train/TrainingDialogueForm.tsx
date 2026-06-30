@@ -142,10 +142,10 @@ export function TrainingDialogueForm({ onSubmit, initial }: TrainingDialogueForm
   return (
     <form
       onSubmit={handleSubmit}
-      className="space-y-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"
+      className="space-y-4 rounded-2xl border border-white/10 bg-[#2f2f2f] p-4"
     >
       <div className="space-y-2">
-        <label htmlFor="training-title" className="text-sm font-medium text-slate-700">
+        <label htmlFor="training-title" className="text-sm font-medium text-zinc-300">
           Titre
         </label>
         <input
@@ -154,12 +154,12 @@ export function TrainingDialogueForm({ onSubmit, initial }: TrainingDialogueForm
           value={title}
           onChange={(event) => setTitle(event.target.value)}
           placeholder="Ex: Salutation entre voisins"
-          className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none ring-lokumu-primary focus:ring-2"
+          className="w-full rounded-xl border border-white/10 bg-[#212121] px-3 py-2 text-sm text-zinc-100 outline-none ring-lokumu-primary placeholder:text-zinc-600 focus:ring-2"
         />
       </div>
 
       <div className="space-y-2">
-        <p className="text-sm font-medium text-slate-700">Langue principale</p>
+        <p className="text-sm font-medium text-zinc-300">Langue principale</p>
         <div className="flex gap-2">
           {(["kit", "lin"] as const).map((value) => (
             <label
@@ -167,7 +167,7 @@ export function TrainingDialogueForm({ onSubmit, initial }: TrainingDialogueForm
               className={`cursor-pointer rounded-full border px-3 py-1.5 text-xs font-semibold uppercase ${
                 language === value
                   ? "border-lokumu-primary bg-lokumu-primary/10 text-lokumu-primary"
-                  : "border-slate-300 text-slate-600"
+                  : "border-white/10 text-zinc-500"
               }`}
             >
               <input
@@ -185,7 +185,7 @@ export function TrainingDialogueForm({ onSubmit, initial }: TrainingDialogueForm
       </div>
 
       <div className="space-y-2">
-        <label htmlFor="training-tags" className="text-sm font-medium text-slate-700">
+        <label htmlFor="training-tags" className="text-sm font-medium text-zinc-300">
           Tags (separes par des virgules)
         </label>
         <input
@@ -194,30 +194,30 @@ export function TrainingDialogueForm({ onSubmit, initial }: TrainingDialogueForm
           value={tagsInput}
           onChange={(event) => setTagsInput(event.target.value)}
           placeholder="greeting, beginner"
-          className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none ring-lokumu-primary focus:ring-2"
+          className="w-full rounded-xl border border-white/10 bg-[#212121] px-3 py-2 text-sm text-zinc-100 outline-none ring-lokumu-primary placeholder:text-zinc-600 focus:ring-2"
         />
       </div>
 
       <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <p className="text-sm font-medium text-slate-700">Tours du dialogue</p>
+          <p className="text-sm font-medium text-zinc-300">Tours du dialogue</p>
           <button
             type="button"
             onClick={addTurn}
-            className="rounded-lg border border-slate-300 px-2.5 py-1 text-xs font-semibold text-slate-700"
+            className="rounded-lg border border-white/10 px-2.5 py-1 text-xs font-semibold text-zinc-400"
           >
             + Ajouter un tour
           </button>
         </div>
         {turns.map((turn, index) => (
-          <div key={`${index}-${turn.role}`} className="space-y-2 rounded-xl border border-slate-200 bg-slate-50 p-3">
+          <div key={`${index}-${turn.role}`} className="space-y-2 rounded-xl border border-white/10 bg-[#212121] p-3">
             <div className="flex items-center justify-between gap-2">
               <select
                 value={turn.role}
                 onChange={(event) =>
                   updateTurn(index, { role: event.target.value as TrainingRole })
                 }
-                className="rounded-lg border border-slate-300 bg-white px-2 py-1 text-xs font-semibold uppercase text-slate-700 outline-none ring-lokumu-primary focus:ring-2"
+                className="rounded-lg border border-white/10 bg-[#2f2f2f] px-2 py-1 text-xs font-semibold uppercase text-zinc-300 outline-none ring-lokumu-primary focus:ring-2"
               >
                 <option value="user">user</option>
                 <option value="assistant">assistant</option>
@@ -237,14 +237,14 @@ export function TrainingDialogueForm({ onSubmit, initial }: TrainingDialogueForm
               onChange={(event) => updateTurn(index, { content: event.target.value })}
               rows={3}
               placeholder={turn.role === "user" ? "Question utilisateur..." : "Reponse assistant..."}
-              className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm outline-none ring-lokumu-primary focus:ring-2"
+              className="w-full rounded-xl border border-white/10 bg-[#2f2f2f] px-3 py-2 text-sm text-zinc-100 outline-none ring-lokumu-primary placeholder:text-zinc-600 focus:ring-2"
             />
           </div>
         ))}
       </div>
 
       {formError ? (
-        <p className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700">
+        <p className="rounded-lg border border-rose-500/20 bg-rose-500/10 px-3 py-2 text-sm text-rose-300">
           {formError}
         </p>
       ) : null}
@@ -252,7 +252,7 @@ export function TrainingDialogueForm({ onSubmit, initial }: TrainingDialogueForm
       <button
         type="submit"
         disabled={isSubmitting}
-        className="w-full rounded-xl bg-lokumu-primary px-4 py-3 text-sm font-semibold text-white disabled:opacity-60"
+        className="w-full rounded-xl bg-zinc-100 px-4 py-3 text-sm font-semibold text-zinc-900 disabled:opacity-60"
       >
         {isSubmitting ? "Envoi..." : "Soumettre le dialogue"}
       </button>

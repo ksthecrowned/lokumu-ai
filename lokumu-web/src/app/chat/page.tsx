@@ -1,13 +1,14 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { ChatComposer } from "../../components/chat/ChatComposer";
+import { ChatHeader } from "../../components/chat/ChatHeader";
 import { ChatWindow } from "../../components/chat/ChatWindow";
 import { CorrectionForm } from "../../components/chat/CorrectionForm";
 import { SourceItem } from "../../components/chat/SourceCitation";
 import { SuggestedQuestions } from "../../components/chat/SuggestedQuestions";
+import { WelcomeScreen } from "../../components/chat/WelcomeScreen";
 import { CommunityStats } from "../../components/demo/CommunityStats";
-import { DemoHeader } from "../../components/demo/DemoHeader";
-import { OfflineBadge } from "../../components/demo/OfflineBadge";
 import { SaveForTrainingButton } from "../../components/train/SaveForTrainingButton";
 import { UiLanguage } from "../../lib/languages";
 import { getSocket } from "../../lib/socket";
@@ -57,6 +58,17 @@ export default function ChatPage() {
       streamTimeoutRef.current = null;
     }
   }, []);
+
+  const startNewChat = useCallback(() => {
+    clearStreamTimeout();
+    setMessages([]);
+    setPrompt("");
+    setNotice(null);
+    setIsStreaming(false);
+    activeAssistantId.current = null;
+    conversationIdRef.current = null;
+    latestUserPrompt.current = "";
+  }, [clearStreamTimeout]);
 
   const submitContribution = useCallback(
     (
@@ -125,15 +137,10 @@ export default function ChatPage() {
 
     const onContributionStatus = (payload: { status: string }) => {
       if (payload.status === "approved") {
-        setNotice("Correction intégrée au corpus culturel.");
+        setNotice("Correction integree au corpus culturel.");
         return;
       }
-      setNotice("Correction enregistrée.");
-    };
-
-    const resetStreaming = () => {
-      clearStreamTimeout();
-      setIsStreaming(false);
+      setNotice("Correction enregistree.");
     };
 
     socket.on("stream", onStream);
@@ -177,8 +184,10 @@ export default function ChatPage() {
             activeAssistantId.current ??
             [...current]
               .reverse()
-              .find((message) => message.role === "assistant" && !message.content.trim())
-              ?.id;
+              .find(
+                (message) =>
+                  message.role === "assistant" && !message.content.trim(),
+              )?.id;
 
           if (!targetId) return current;
 
@@ -234,82 +243,63 @@ export default function ChatPage() {
   const showChat = messages.length > 0 || isStreaming;
 
   return (
-    <main className="mx-auto flex h-dvh max-w-3xl flex-col bg-slate-50">
-      <header className="shrink-0 border-b border-slate-200 bg-white px-4 py-3">
-        <div className="flex items-center justify-between gap-3">
-          <DemoHeader language={language} onLanguageChange={setLanguage} />
-          <OfflineBadge />
-        </div>
-      </header>
+    <div className="flex h-dvh flex-col bg-[#212121] text-zinc-100">
+      <ChatHeader
+        language={language}
+        onLanguageChange={setLanguage}
+        onNewChat={startNewChat}
+      />
 
-      <div className="lokumu-scrollbar min-h-0 flex-1 overflow-y-auto px-4 py-4">
+      <div className="lokumu-scrollbar min-h-0 flex-1 overflow-y-auto">
         {showWelcome ? (
-          <div className="mx-auto max-w-lg space-y-4 pt-8 text-center">
-            <p className="text-2xl font-semibold text-slate-900">Mbote 👋</p>
-            <p className="text-sm text-slate-600">
-              Posez une question en français, anglais, lingala ou kituba.
-              Réponses générées <strong>100 % en local</strong>.
-            </p>
-            <SuggestedQuestions
-              language={language}
-              disabled={isStreaming}
-              onSelect={(question) => sendPrompt(question)}
-            />
-          </div>
+          <WelcomeScreen
+            language={language}
+            disabled={isStreaming}
+            onSelect={(question) => sendPrompt(question)}
+          />
         ) : null}
         {showChat ? (
-          <>
+          <div className="pt-2">
             <ChatWindow messages={chatMessages} isTyping={isStreaming} />
-            <SaveForTrainingButton messages={messages} language={language} />
-          </>
+            <div className="mx-auto max-w-3xl px-3 sm:px-4">
+              <SaveForTrainingButton messages={messages} language={language} />
+            </div>
+          </div>
         ) : null}
       </div>
 
       {notice ? (
-        <div className="mx-4 mb-2 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
-          {notice}
+        <div className="mx-auto mb-2 w-full max-w-3xl px-3 sm:px-4">
+          <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-3 py-2 text-sm text-emerald-300">
+            {notice}
+          </div>
         </div>
       ) : null}
 
-      <footer className="shrink-0 border-t border-slate-200 bg-white px-4 py-3">
-        {!showWelcome ? (
-          <div className="mb-2">
+      <footer className="shrink-0 border-t border-white/10 bg-[#212121] px-3 py-3 sm:px-4">
+        <div className="mx-auto w-full max-w-3xl space-y-2">
+          {!showWelcome ? (
             <SuggestedQuestions
               language={language}
               disabled={isStreaming}
+              variant="chips"
               onSelect={(question) => sendPrompt(question)}
             />
-          </div>
-        ) : null}
-        <div className="flex gap-2">
-          <input
-            type="text"
+          ) : null}
+          <ChatComposer
             value={prompt}
-            onChange={(e) => setPrompt(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault();
-                sendPrompt();
-              }
-            }}
-            placeholder="Votre question…"
+            onChange={setPrompt}
+            onSubmit={() => sendPrompt()}
             disabled={isStreaming}
-            className="min-w-0 flex-1 rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none ring-lokumu-primary focus:ring-2 disabled:opacity-60"
+            placeholder={
+              isStreaming ? "Lokumu reflechit…" : "Envoyer un message…"
+            }
           />
-          <button
-            type="button"
-            onClick={() => sendPrompt()}
-            disabled={isStreaming || !prompt.trim()}
-            className="shrink-0 rounded-xl bg-lokumu-primary px-5 py-3 text-sm font-semibold text-white disabled:opacity-50"
-          >
-            {isStreaming ? "…" : "Envoyer"}
-          </button>
-        </div>
-        <div className="mt-2 flex items-center justify-between text-xs text-slate-400">
-          <CommunityStats />
-          <span>Entrée pour envoyer</span>
+          <div className="flex items-center justify-center text-[11px] text-zinc-600">
+            <CommunityStats />
+          </div>
         </div>
       </footer>
-    </main>
+    </div>
   );
 }

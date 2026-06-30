@@ -1,7 +1,9 @@
 import {
   classifyQueryIntent,
+  isGreetingConversationQuery,
   isProverbQuery,
   resolveRagLimit,
+  resolveReplyLanguage,
   resolveSearchLanguage,
   shouldUseRag,
 } from './cultural-router';
@@ -36,6 +38,25 @@ describe('cultural-router', () => {
 
   it('classifies greeting queries', () => {
     expect(classifyQueryIntent('Mbote, ozali malamu?')).toBe('greeting');
+  });
+
+  it('detects conversational greeting queries', () => {
+    expect(isGreetingConversationQuery('Mbote, ozali malamu?')).toBe(true);
+    expect(isGreetingConversationQuery('mbote')).toBe(false);
+    expect(isGreetingConversationQuery('Comment dit-on mbote en kituba ?')).toBe(
+      false,
+    );
+  });
+
+  it('resolves reply language from prompt markers', () => {
+    expect(resolveReplyLanguage('Mbote, ozali malamu?', 'fra')).toBe('lin');
+    expect(resolveReplyLanguage('Mbote, nge me kwenda mbote?', 'fra')).toBe(
+      'kit',
+    );
+  });
+
+  it('uses precise top-k for conversational greetings', () => {
+    expect(resolveRagLimit('Mbote, ozali malamu?')).toBe(3);
   });
 
   it('uses vague top-k for greetings', () => {
@@ -145,5 +166,26 @@ describe('cultural-response', () => {
 
     expect(response).toContain('Mbote.');
     expect(response).toContain('→ Bonjour.');
+  });
+
+  it('replies in lingala for wellness greetings', () => {
+    const greeting = {
+      id: 'g2',
+      content: 'Nazali malamu.',
+      metadata: { title: 'Reponse tout va bien', type: 'greeting' },
+      language: 'lin',
+      score: 0.9,
+      community: false,
+    };
+
+    const grounded = buildGroundedResponse(
+      [greeting as any],
+      'Mbote, ozali malamu?',
+      'fra',
+    );
+
+    expect(grounded?.response).toContain('Nazali malamu');
+    expect(grounded?.response).not.toContain('signifie');
+    expect(grounded?.source?.id).toBe('g2');
   });
 });

@@ -19,10 +19,13 @@ export class HfInferenceClient {
     const override =
       this.config.baseUrl ?? process.env.HF_INFERENCE_URL?.trim();
     if (override) {
-      return `${override.replace(/\/$/, '')}/v1/chat/completions`;
+      const base = override.replace(/\/$/, '');
+      return base.endsWith('/v1/chat/completions')
+        ? base
+        : `${base}/v1/chat/completions`;
     }
 
-    return `https://api-inference.huggingface.co/models/${this.config.modelId}/v1/chat/completions`;
+    return 'https://router.huggingface.co/v1/chat/completions';
   }
 
   async chat(

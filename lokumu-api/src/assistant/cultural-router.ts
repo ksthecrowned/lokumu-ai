@@ -14,6 +14,32 @@ export function isSimpleGreetingQuery(prompt: string): boolean {
   );
 }
 
+export function isGreetingConversationQuery(prompt: string): boolean {
+  if (isTranslationQuery(prompt)) return false;
+  if (!/mbote|sango nini|salut|bonjour|bonsoir|hello|hi|kimia/i.test(prompt)) {
+    return false;
+  }
+  if (isSimpleGreetingQuery(prompt)) return false;
+  return /ozali|malamu|nazali|kwenda mbote|kele mbote|nge me|mono me|comment (ca )?va|how are you|ca va/i.test(
+    prompt,
+  );
+}
+
+export function resolveReplyLanguage(
+  prompt: string,
+  uiLanguage: InternalLanguage,
+): InternalLanguage {
+  if (/kituba|kitúba|kele mbote|mono me|nge me|kwenda mbote|bantu/i.test(prompt)) {
+    return 'kit';
+  }
+  if (
+    /lingala|lingála|ozali|nazali|sango nini|botuna|mpo na|mbote/i.test(prompt)
+  ) {
+    return 'lin';
+  }
+  return uiLanguage;
+}
+
 export type QueryIntent =
   | 'greeting'
   | 'translation'
@@ -50,7 +76,9 @@ export function resolveRagLimit(prompt: string): number {
   const precise = parseTopK(process.env.RAG_TOP_K_PRECISE, 3);
   const intent = classifyQueryIntent(prompt);
 
-  if (intent === 'greeting') return vague;
+  if (intent === 'greeting') {
+    return isGreetingConversationQuery(prompt) ? precise : vague;
+  }
   if (intent === 'grammar' || intent === 'translation') return precise;
   return 5;
 }

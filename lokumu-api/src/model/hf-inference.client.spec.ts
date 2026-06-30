@@ -26,11 +26,12 @@ describe('HfInferenceClient', () => {
 
     expect(result).toBe('Mbote!');
     expect(global.fetch).toHaveBeenCalledWith(
-      'https://api-inference.huggingface.co/models/Svngoku/aya-23-8b-afrimmlu-lin/v1/chat/completions',
+      'https://router.huggingface.co/v1/chat/completions',
       expect.objectContaining({
         headers: expect.objectContaining({
           Authorization: 'Bearer hf_test',
         }),
+        body: expect.stringContaining('Svngoku/aya-23-8b-afrimmlu-lin'),
       }),
     );
   });
